@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.assist.AutoCodeMapper">
+	<resultMap id="baseResultMap" type="com.lxp.model.assist.AutoCode">
+	    <result column="id" jdbcType="VARCHAR" property="id" />
+	    <result column="moduleName" jdbcType="VARCHAR" property="moduleName" />
+	    <result column="moduleMath" jdbcType="VARCHAR" property="moduleMath" />
+	    <result column="packagePath" jdbcType="VARCHAR" property="packagePath" />
+	    <result column="tableCode" jdbcType="VARCHAR" property="tableCode" />
+	    <result column="queryColumn" jdbcType="VARCHAR" property="queryColumn" />
+	    <result column="listColumn" jdbcType="VARCHAR" property="listColumn" />
+	    <result column="editColumn" jdbcType="VARCHAR" property="editColumn" />
+	    <result column="mainPath" jdbcType="VARCHAR" property="mainPath" />
+	    <result column="editPath" jdbcType="VARCHAR" property="editPath" />
+	    
+	    <result column="tableName" jdbcType="VARCHAR" property="tableName" />
+	    <result column="columnGps" jdbcType="VARCHAR" property="columnGps" />
+	    <result column="columnCode" jdbcType="VARCHAR" property="columnCode" />
+	    <result column="columnName" jdbcType="VARCHAR" property="columnName" />
+	    <result column="columnType" jdbcType="VARCHAR" property="columnType" />
+	    <result column="columnIfnull" jdbcType="VARCHAR" property="columnIfnull" />
+	</resultMap>
+
+	<select id="queryAutoCodeByLike" parameterType="com.lxp.model.assist.AutoCode" resultMap="baseResultMap">
+		select * from  ass_auto_code w
+		<where>
+			<if test="id!=null and id!='' ">
+				AND w.ID = #{id}
+			</if>
+			<if test="moduleName!=null and moduleName!='' ">
+				AND w.moduleName like CONCAT('%',#{moduleName},'%') 
+			</if>
+			<if test="tableCode!=null and tableCode!='' ">
+				AND w.tableCode like CONCAT('%',#{tableCode},'%')
+			</if>
+		</where>
+		order by id
+	</select>
+	
+	<select id="getAllTableList" resultMap="baseResultMap">
+		SELECT table_name AS tableCode ,(CASE TABLE_COMMENT WHEN '' THEN '空' ELSE TABLE_COMMENT END) AS tableName FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'framework'
+	</select>
+	
+	<select id="getColumnByTableName" parameterType="java.lang.String" resultMap="baseResultMap">
+		SELECT A.TABLE_NAME AS tableCode,
+		       A.TABLE_COMMENT AS tableName,
+		       B.column_name AS columnCode,
+		       CASE B.column_comment WHEN '' THEN B.column_name ELSE B.column_comment END AS columnName,
+		       B.DATA_TYPE AS columnType,
+		       B.IS_NULLABLE AS columnIfnull
+		  FROM information_schema.TABLES A, information_schema.columns B
+		 WHERE A.TABLE_NAME = B.TABLE_NAME
+		   AND A.TABLE_NAME = #{tableName}
+	</select>
+	
+	<select id="queryAutoCodeSetListByFid" resultMap="baseResultMap">
+		select * from ass_auto_code_set
+		<where>
+			<if test="fid!=null and fid!='' ">
+				 and  fid = #{fid}
+			</if>
+			<if test="columnGps!=null and columnGps!='' ">
+				 and columnGps = #{columnGps}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="saveData" parameterType="com.lxp.model.assist.AutoCode">
+		insert into ass_auto_code (
+			id,
+			moduleName,
+			moduleMath,
+			packagePath,
+			tableCode,
+			queryColumn,
+			listColumn,
+			editColumn,
+			mainPath,
+			editPath
+		)values (
+			#{id,jdbcType=VARCHAR},
+			#{moduleName,jdbcType=VARCHAR},
+			#{moduleMath,jdbcType=VARCHAR},
+			#{packagePath,jdbcType=VARCHAR},
+			#{tableCode,jdbcType=VARCHAR},
+			#{queryColumn,jdbcType=VARCHAR},
+			#{listColumn,jdbcType=VARCHAR},
+			#{editColumn,jdbcType=VARCHAR},
+			#{mainPath,jdbcType=VARCHAR},
+			#{editPath,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateData" parameterType="com.lxp.model.assist.AutoCode">
+		update ass_auto_code set 
+			moduleName = #{moduleName,jdbcType=VARCHAR},
+			moduleMath = #{moduleMath,jdbcType=VARCHAR},
+			packagePath = #{packagePath,jdbcType=VARCHAR},
+			tableCode = #{tableCode,jdbcType=VARCHAR},
+			queryColumn = #{queryColumn,jdbcType=VARCHAR},
+			listColumn = #{listColumn,jdbcType=VARCHAR},
+			editColumn = #{editColumn,jdbcType=VARCHAR},
+			mainPath = #{mainPath,jdbcType=VARCHAR},
+			editPath = #{editPath,jdbcType=VARCHAR}
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteData" parameterType="java.lang.String">
+		delete from ass_auto_code where id = #{id}
+	</delete>
+	
+	<delete id="deleteAutoCodeSetByFid" parameterType="java.lang.String">
+		delete from ass_auto_code_set WHERE fid = #{fid}
+	</delete>
+	
+	<insert id="insertAutoCodeSetData" parameterType="com.lxp.model.assist.AutoCode">
+		insert into ass_auto_code_set (id,columnGps,columnCode,columnName,columnType,columnFlag,columnList,fid) values
+	        <foreach collection="list" item="item" index="index" separator=",">
+		        (#{item.id},#{item.columnGps},#{item.columnCode},#{item.columnName},#{item.columnType},#{item.columnFlag},#{item.columnList},#{item.fid})
+	        </foreach>
+	</insert>
+	
+</mapper>

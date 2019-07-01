@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysResourcesMapper">
+	<resultMap id="ResultMap" type="com.lxp.model.sys.SysResources">
+	    <id column="resId" jdbcType="VARCHAR" property="resId" />
+	    <result column="resCode" jdbcType="VARCHAR" property="resCode" />
+	    <result column="resName" jdbcType="VARCHAR" property="resName" />
+	    <result column="resPid" jdbcType="VARCHAR" property="resPid" />
+	    <result column="resUrl" jdbcType="VARCHAR" property="resUrl" />
+	    <result column="resStatus" jdbcType="VARCHAR" property="resStatus" />
+	    <result column="resIcon" jdbcType="VARCHAR" property="resIcon" />
+	    <result column="resIfChild" jdbcType="VARCHAR" property="resIfChild" />
+	    <result column="resType" jdbcType="VARCHAR" property="resType" />
+	    <result column="resSid" jdbcType="INTEGER" property="resSid" />
+	    <result column="sysId" jdbcType="VARCHAR" property="sysId" />
+	    <result column="resRemark" jdbcType="VARCHAR" property="resRemark" />
+	    <result column="createTime" jdbcType="DATE" property="createTime" />
+	    <result column="creator" jdbcType="VARCHAR" property="creator" />
+	    <result column="updateTime" jdbcType="DATE" property="updateTime" />
+	    <result column="updator" jdbcType="VARCHAR" property="updator" />
+	</resultMap>
+
+	<select id="querySysResourcesByLikes" parameterType="com.lxp.model.sys.SysResources" resultMap="ResultMap">
+		select * from sys_resources w
+		<where>
+			<if test="resId!=null and resId!='' ">
+				AND w.resId = #{resId}
+			</if>
+			<if test="resCode!=null and resCode!='' ">
+				AND w.resCode like CONCAT('%',#{resCode},'%')
+			</if>
+			<if test="resName!=null and resName!='' ">
+				AND w.resName like  CONCAT('%',#{resName},'%')
+			</if>
+			<if test="resPid!=null and resPid!='' ">
+				AND w.resPid = #{resPid}
+			</if>
+			<if test="resStatus!=null and resStatus!='' ">
+				AND w.resStatus = #{resStatus}
+			</if>
+			<if test="resIfChild!=null and resIfChild!='' ">
+				AND w.resIfChild = #{resIfChild}
+			</if>
+			<if test="resType!=null and resType!='' ">
+				AND w.resType = #{resType}
+			</if>
+			<if test="sysId!=null and sysId!='' ">
+				AND w.sysId = #{sysId}
+			</if>
+		</where>
+		order by resSid,resId
+	</select>
+	
+	<select id="querySysResourcesByEquals" parameterType="com.lxp.model.sys.SysResources" resultMap="ResultMap">
+		select * from sys_resources w
+		<where>
+			<if test="resId!=null and resId!='' ">
+				AND w.resId != #{resId}
+			</if>
+			<if test="resCode!=null and resCode!='' ">
+				AND w.resCode = #{resCode}
+			</if>
+			<if test="resName!=null and resName!='' ">
+				AND w.resName = #{resName}
+			</if>
+			<if test="resPid!=null and resPid!='' ">
+				AND w.resPid = #{resPid}
+			</if>
+			<if test="resStatus!=null and resStatus!='' ">
+				AND w.resStatus = #{resStatus}
+			</if>
+			<if test="resIfChild!=null and resIfChild!='' ">
+				AND w.resIfChild = #{resIfChild}
+			</if>
+			<if test="resType!=null and resType!='' ">
+				AND w.resType = #{resType}
+			</if>
+			<if test="sysId!=null and sysId!='' ">
+				AND w.sysId = #{sysId}
+			</if>
+		</where>
+		order by resId
+	</select>
+	
+	<select id="getMaxSysResourcesCode" resultMap="ResultMap">
+		select max(resCode) as resCode from sys_resources 
+	</select>
+	
+	<select id="getAllResPidSysResources" resultMap="ResultMap">
+		SELECT DISTINCT resPid FROM sys_resources ORDER BY resId
+	</select>
+	
+	<select id="getSysResourcesBySidAndPid" parameterType="java.lang.String" resultMap="ResultMap">
+		SELECT * FROM sys_resources WHERE resSid > #{resSid} AND resPid = #{resPid} ORDER BY resSid
+	</select>
+	
+	<select id="getSysResourcesBySidAndPidDesc" parameterType="java.lang.String" resultMap="ResultMap">
+		SELECT * FROM sys_resources WHERE resSid <![CDATA[ < ]]> #{resSid} AND resPid = #{resPid} ORDER BY resSid DESC
+	</select>
+	
+	<select id="getSysResourcesSidByResPid" parameterType="java.lang.String" resultMap="ResultMap">
+		select max(resSid) as resSid from sys_resources where resPid = #{resPid}
+	</select>
+	
+	<insert id="insertSysResourcesData" parameterType="com.lxp.model.sys.SysResources" >
+		insert into sys_resources(
+			resId,
+			resCode,
+			resName,
+			resPid,
+			resUrl,
+			resStatus,
+			resIcon,
+			resIfChild,
+			resType,
+			sysId,
+			resSid,
+			resRemark,
+			createTime,
+			creator
+		  )values(
+		  	#{resId,jdbcType=VARCHAR},
+			#{resCode,jdbcType=VARCHAR},
+			#{resName,jdbcType=VARCHAR},
+			#{resPid,jdbcType=VARCHAR},
+			#{resUrl,jdbcType=VARCHAR},
+			#{resStatus,jdbcType=VARCHAR},
+			#{resIcon,jdbcType=VARCHAR},
+			#{resIfChild,jdbcType=VARCHAR},
+			#{resType,jdbcType=VARCHAR},
+			#{sysId,jdbcType=VARCHAR},
+			#{resSid,jdbcType=INTEGER},
+			#{resRemark,jdbcType=VARCHAR},
+			#{createTime,jdbcType=VARCHAR},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<update id="updateSysResourcesData" parameterType="com.lxp.model.sys.SysResources">
+		update sys_resources set
+			resName = #{resName,jdbcType=VARCHAR},
+			resStatus =#{resStatus,jdbcType=INTEGER},
+			resIcon = #{resIcon,jdbcType=VARCHAR},
+			resIfChild = #{resIfChild,jdbcType=VARCHAR},
+			resUrl = #{resUrl,jdbcType=VARCHAR},
+			resRemark = #{resRemark,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=VARCHAR},
+			updator = #{updator,jdbcType=VARCHAR}
+		where resId = #{resId}
+	</update>
+	
+	<update id="updateSysResourcesSidByResId" parameterType="java.lang.String" >
+		update sys_resources set resSid = #{resSid} where resId = #{resId}
+	</update>
+	
+	<delete id="deleteSysResourcesResData" parameterType="java.lang.String">
+		delete from sys_resources where resId = #{resId}
+	</delete>
+	
+	<delete id="deleteSysResourcesResDataBySysId" parameterType="java.lang.String">
+		delete from sys_resources where sysId = #{sysId}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>基于LayUI的后台管理系统</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+	<!-- layui样式 -->
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css" media="all">
+	<!-- 自定义样式 -->
+	<link rel="stylesheet" href="${ctx}/css/template.css" media="all">
+	<link rel="stylesheet" href="${ctx}/css/common.css" media="all">
+</head>
+<body id="mydiv" class="login_bg">
+	<!-- 画布  -->
+	<canvas style="position: fixed; top: 0px; left: 0px; z-index: -1;"></canvas>
+	<!-- 表单  -->
+	<form id="form">
+		<div class="layui-user-login">
+			<div class="layui-user-login-main">
+				<div class="layui-user-login-box layui-user-login-header">
+					<h2>LayUI</h2>
+					<p>基于LayUI的后台管理系统</p>
+				</div>
+				<div class="layui-user-login-box layui-user-login-body layui-form layui-form-pane">
+					<div class="layui-form-item">
+						<label class="layui-user-login-icon layui-icon layui-icon-username" for="userAccount"></label>
+						<input type="text" name="userAccount" id="userAccount" class="layui-input" lay-verify="required" placeholder="用户名" >
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-user-login-icon layui-icon layui-icon-password" for="userPwdBak"></label>
+						<input type="password" name="userPwdBak" id="userPwdBak" class="layui-input" lay-verify="required" placeholder="密码">
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-row">
+							<div class="layui-col-xs7">
+								<label class="layui-user-login-icon layui-icon layui-icon-vercode" for="vercode"></label>
+								<input type="text" name="vercode" id="vercode" class="layui-input" lay-verify="required" placeholder="验证码">
+							</div>
+							<div class="layui-col-xs5">
+								<div style="margin-left: 10px;">
+									<img id="randomIMG" onclick="this.src='/getYzm?rand=' + Math.random();" class="layui-user-login-codeimg" id="img_vercode">
+								</div>
+								<script language="javascript">
+									document.getElementById('randomIMG').src = "/getYzm?rand="+ Math.random();
+								</script>
+							</div>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="btn_login">登 入</button>
+					</div>
+					<div class="layui-trans layui-form-item layui-user-login-other">
+						<label>社交账号登入</label>
+						<a href="javascript:;"><i class="layui-icon layui-icon-login-qq"></i></a>
+						<a href="javascript:;"><i class="layui-icon layui-icon-login-wechat"></i></a>
+						<a href="javascript:;"><i class="layui-icon layui-icon-login-weibo"></i></a>
+						<a href="javascript:;" class="layui-user-jump-change layadmin-link">忘记密码</a>
+					</div>
+				</div>
+			</div>
+			<div class="layui-trans layui-user-login-footer">
+				<p>© 2018 <a href="http://www.layui.com/" target="_blank">layui.com</a></p>
+			</div>
+		</div>
+	</form>
+<!-- layui -->
+<script type="text/javascript" src="layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<!-- canvas-particle -->
+<script type="text/javascript" src="js/plugins/particles/canvas-particle.js"></script>
+<script type="text/javascript">
+	
+    layui.use(['form'], function(){
+        var form = layui.form;
+        //提交
+        form.on('submit(btn_login)', function(obj){
+        	var index = layer.load(3, {shade: [0.3, '#000000']});
+			$.ajax({
+        		url : '/login',
+    			data: $("#form").serialize(),
+    			type: 'post',
+    			async:false,
+    			success:function (result) {
+    				if(result.success){
+    					layer.close(index);
+    					window.location.href = "/";
+    			 	}else{
+    		        	layer.close(index);
+    		        	layer.msg(result.msg, {icon: 5});
+    			 	}
+    			},error: function (XMLHttpRequest, textStatus, errorThrown) {
+    				layer.close(index);
+    			}
+    		});
+			return false;
+        });
+	});
+    $(function(){
+    	//配置 id 必须为mydiv 切记
+		var config = {
+			vx : 4, //小球x轴速度,正为右，负为左
+			vy : 4, //小球y轴速度
+			height : 2, //小球高宽，其实为正方形，所以不宜太大
+			width : 2,
+			count : 400, //点个数
+			color : "121, 162, 185", //点颜色
+			stroke : "130,255,255", //线条颜色
+			dist : 6000, //点吸附距离
+			e_dist : 20000, //鼠标吸附加速距离
+			max_conn : 10
+		//点到点最大连接数
+		}
+		//调用
+		CanvasParticle(config);
+    });
+</script>
+</body>
+</html>

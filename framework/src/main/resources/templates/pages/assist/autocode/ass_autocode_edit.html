@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+  	<link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+  	<!-- formSelects Css -->
+  	<link rel="stylesheet" href="${ctx}/js/plugins/formSelects/formSelects-v4.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+	<form id="editForm" method="post" class="layui-form" lay-filter="form">
+		<div class="layui-row">
+			<div class="layui-col-md6" style="padding-right: 10px;">
+				<div class="layui-row" id="form_data" style="overflow-y: auto;">
+					<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">模块名称</label>
+							<div class="layui-input-block">
+								<input type="hidden" name="id" class="layui-input">		
+								<input type="text" name="moduleName" class="layui-input" lay-verify="required">
+								<span class="layui-input-required">*</span>
+							</div>
+						</div>
+		    		</div>
+		  			<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">父模块缩写</label>
+							<div class="layui-input-block">
+								<input type="text" name="moduleMath" class="layui-input" lay-verify="required">
+								<span class="layui-input-required">*</span>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">包前缀</label>
+							<div class="layui-input-block">
+								<input type="text" name="packagePath" class="layui-input" lay-verify="required">
+								<span class="layui-input-required">*</span>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">表名称</label>
+							<div class="layui-input-block">
+								<select name="tableCode" id="tableCode" class="layui-input" lay-verify="required" lay-filter="tableSel">
+									<option></option>
+									<#if tables??> 
+										<#list tables as so>
+											<option value="${so.tableCode!}" >${so.tableCode!}【${so.tableName!}】</option>
+										</#list> 
+									</#if>
+								</select>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">查询项</label>
+							<div class="layui-input-block">
+								<select name="queryColumn" id="queryColumn" xm-select="queryColumn" class="layui-input" lay-verify="required"></select>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">列表项</label>
+							<div class="layui-input-block">
+								<select name="listColumn" id="listColumn" xm-select="listColumn" class="layui-input" lay-verify="required"></select>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">编辑项</label>
+							<div class="layui-input-block">
+								<select name="editColumn" id="editColumn"  xm-select="editColumn" class="layui-input" lay-verify="required"></select>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">主页地址</label>
+							<div class="layui-input-block">
+								<input type="text" name="mainPath" class="layui-input" lay-verify="required">
+								<span class="layui-input-required">*</span>
+							</div>
+						</div>
+		    		</div>
+		    		<div class="layui-col-md12">
+		      			<div class="layui-form-item">
+							<label class="layui-form-label">编辑地址</label>
+							<div class="layui-input-block">
+								<input type="text" name="editPath" class="layui-input" lay-verify="required">
+								<span class="layui-input-required">*</span>
+							</div>
+						</div>
+		    		</div>
+				</div>	
+			</div>
+			<div class="layui-col-md6">
+				<div class="layui-row" style="padding-left: 10px;border-left: 1px solid #c1c1c1">
+					<div class="layui-col-md12">
+						<div id="div_head" class="layui-ztree-head" >
+							<h3><strong>字段设置</strong></h3>
+				        </div>
+				        <div id="div_body" class="layui-row" style="overflow-y: auto;">
+			        		<div class="layui-col-md12">
+			        			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+									<legend>查询项</legend>
+								</fieldset>
+								<div id="queryColumnSet" class="layui-row">
+								<#if querySets??> 
+									<#list querySets as qs>
+										<div class="layui-form-item" id="${qs.columnGps!}_${qs.columnCode!}">	
+											<label class="layui-form-label">${qs.columnName!}</label>
+											<div class="layui-input-inline">
+												<input type="hidden" name="columnName" value="${qs.columnName!}"/>
+												<select name="columnType" st="columnType" lay-filter="typeSel" lay-verify="required">
+													<option value="1" ${(qs.columnType = '1')?string('selected','')}>input【输入框】</option>
+													<option value="2" ${(qs.columnType = '2')?string('selected','')}>radio【单选框】</option>
+													<option value="3" ${(qs.columnType = '3')?string('selected','')}>check【复选框】</option>
+													<option value="4" ${(qs.columnType = '4')?string('selected','')}>select【选择框】</option>
+												</select>
+											</div>
+											<div class="layui-input-inline">
+												<select name="columnFlag" st="columnFlag" lay-verify="required">
+													<option></option>
+													<option value="0" ${(qs.columnFlag = '0')?string('selected','')}>normal【正常】</option>
+													<option value="1" ${(qs.columnFlag = '1')?string('selected','')}>hidden【隐藏】</option>
+													<option value="2" ${(qs.columnFlag = '2')?string('selected','')} ${(qs.columnType = '2' || qs.columnType = '3' || qs.columnType = '4' )?string('disabled','')}>readonly【只读】</option>
+													<option value="3" ${(qs.columnFlag = '3')?string('selected','')}>disabled【禁用】</option>
+													<option value="4" ${(qs.columnFlag = '4')?string('selected','')} ${(qs.columnType = '1')?string('disabled','')}>multiple【多选】</option>
+												</select>
+											</div>
+											<div class="layui-input-inline">
+												<input name="columnList" st="columnList" class="layui-input" lay-verify="" value="${qs.columnList!}" placeholder="请输入sys_dmb的dmlx" style="display:${(qs.columnType = '1')?string('none','')}"/>
+											</div>
+										</div>
+									</#list> 
+								</#if>
+								</div>
+							</div>
+							<div class="layui-col-md12">		
+								<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+									<legend>列表项</legend>
+								</fieldset>
+								<div id="listColumnSet" class="layui-row">
+								<#if listSets??> 
+									<#list listSets as qs>
+										<div class="layui-form-item" id="${qs.columnGps!}_${qs.columnCode!}">	
+											<label class="layui-form-label">${qs.columnName!}</label>
+											<div class="layui-input-inline">
+												<input type="hidden" name="columnName" value="${qs.columnName!}"/>
+												<select name="columnType" st="columnType" lay-filter="typeSel" lay-verify="required">
+													<option value="1" ${(qs.columnType = '1')?string('selected','')}>input【输入框】</option>
+													<option value="2" ${(qs.columnType = '2')?string('selected','')}>radio【单选框】</option>
+													<option value="3" ${(qs.columnType = '3')?string('selected','')}>check【复选框】</option>
+													<option value="4" ${(qs.columnType = '4')?string('selected','')}>select【选择框】</option>
+												</select>
+											</div>
+											<div class="layui-input-inline">
+												<select name="columnFlag" st="columnFlag" lay-verify="required">
+													<option></option>
+													<option value="0" ${(qs.columnFlag = '0')?string('selected','')}>normal【正常】</option>
+													<option value="1" ${(qs.columnFlag = '1')?string('selected','')}>hidden【隐藏】</option>
+													<option value="2" ${(qs.columnFlag = '2')?string('selected','')} ${(qs.columnType = '2' || qs.columnType = '3' || qs.columnType = '4' )?string('disabled','')}>readonly【只读】</option>
+													<option value="3" ${(qs.columnFlag = '3')?string('selected','')}>disabled【禁用】</option>
+													<option value="4" ${(qs.columnFlag = '4')?string('selected','')} ${(qs.columnType = '1')?string('disabled','')}>multiple【多选】</option>
+												</select>
+											</div>
+											<div class="layui-input-inline">
+												<input name="columnList" st="columnList" class="layui-input" lay-verify="" value="${qs.columnList!}" placeholder="请输入sys_dmb的dmlx" style="display:${(qs.columnType = '1')?string('none','')}"/>
+											</div>
+										</div>
+									</#list> 
+								</#if>
+								</div>
+							</div>
+							<div class="layui-col-md12">
+								<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+									<legend>编辑列</legend>
+								</fieldset>
+								<div id="editColumnSet" class="layui-row">
+								<#if editSets??> 
+									<#list editSets as qs>
+										<div class="layui-form-item" id="${qs.columnGps!}_${qs.columnCode!}">	
+											<label class="layui-form-label">${qs.columnName!}</label>
+											<div class="layui-input-inline">
+												<input type="hidden" name="columnName" value="${qs.columnName!}"/>
+												<select name="columnType" st="columnType" lay-filter="typeSel" lay-verify="required">
+													<option value="1" ${(qs.columnType = '1')?string('selected','')}>input【输入框】</option>
+													<option value="2" ${(qs.columnType = '2')?string('selected','')}>radio【单选框】</option>
+													<option value="3" ${(qs.columnType = '3')?string('selected','')}>check【复选框】</option>
+													<option value="4" ${(qs.columnType = '4')?string('selected','')}>select【选择框】</option>
+												</select>
+											</div>
+											<div class="layui-input-inline">
+												<select name="columnFlag" st="columnFlag" lay-verify="required">
+													<option></option>
+													<option value="0" ${(qs.columnFlag = '0')?string('selected','')}>normal【正常】</option>
+													<option value="1" ${(qs.columnFlag = '1')?string('selected','')}>hidden【隐藏】</option>
+													<option value="2" ${(qs.columnFlag = '2')?string('selected','')} ${(qs.columnType = '2' || qs.columnType = '3' || qs.columnType = '4' )?string('disabled','')}>readonly【只读】</option>
+													<option value="3" ${(qs.columnFlag = '3')?string('selected','')}>disabled【禁用】</option>
+													<option value="4" ${(qs.columnFlag = '4')?string('selected','')} ${(qs.columnType = '1')?string('disabled','')}>multiple【多选】</option>
+												</select>
+											</div>
+											<div class="layui-input-inline">
+												<input name="columnList" st="columnList" class="layui-input" lay-verify="" value="${qs.columnList!}" placeholder="请输入sys_dmb的dmlx" style="display:${(qs.columnType = '1')?string('none','')}"/>
+											</div>
+										</div>
+									</#list> 
+								</#if>
+								</div>
+			        		</div>
+				        </div>
+			   		</div>	
+				</div>
+			</div>
+  		</div>
+
+		<div id="from_btn" class="layui-row layui-form-btn">
+			<div class="layui-col-md12">
+				<a id="saveBtn" class="layui-btn" lay-submit lay-filter="saveBtn">提交</a>
+				<a id="closeBtn" class="layui-btn layui-btn-danger">关闭</a>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- common.js -->
+<script type="text/javascript" src="${ctx}/js/common.js"></script>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<!-- layui select -->
+<script type="text/javascript" src="${ctx}/js/plugins/formSelects/formSelects-v4.js"></script>
+<!-- template js -->
+<script type="text/javascript" src="${ctx}/js/template.js"></script>
+<script type="text/html" id="columnSet" >
+	<div class="layui-form-item" id="<%=flag%>_<%=columnCode%>">
+		<label class="layui-form-label"><%=columnName%></label>
+		<div class="layui-input-inline">
+			<input type="hidden" name="columnName" value="<%=columnName%>"/>
+			<select name="columnType" st="columnType" lay-filter="typeSel" lay-verify="required"><option value="1" selected>input【输入框】</option><option value="2">radio【单选框】</option><option value="3">check【复选框】</option><option value="4">select【选择框】</option></select>
+		</div>
+		<div class="layui-input-inline">
+			<select name="columnFlag" st="columnFlag" lay-verify="required"><option></option><option value="0" selected>normal【正常】</option><option value="1">hidden【隐藏】</option><option value="2">readonly【只读】</option><option value="3">disabled【禁用】</option><option value="4" disabled>multiple【多选】</option></select>
+		</div>
+		<div class="layui-input-inline">
+			<input name="columnList" st="columnList" class="layui-input" lay-verify="" value="" placeholder="请输入sys_dmb的dmlx" style="display:none"/>
+		</div>
+	</div>
+</script>
+<script type="text/javascript">
+
+	// layui
+	var _from = null;
+	layui.use('form', function(){
+	    var form = layui.form;
+	    _from = layui.form;
+	  	//表单初始赋值
+        form.val('form', {
+            "id":"${autoCode.id!}",
+            "moduleName":"${autoCode.moduleName!}",
+            "moduleMath":"${autoCode.moduleMath!}",
+            "packagePath":"${autoCode.packagePath!}",
+            "tableCode":"${autoCode.tableCode!}",
+            "mainPath":"${autoCode.mainPath!}",
+            "editPath":"${autoCode.editPath!}",
+            "infoPath":"${autoCode.infoPath!}"
+        });
+	  	form.on('select(tableSel)',function(data){
+	  		var tableName = data.value;
+	  		$.ajax({
+        		url : '/ass/autocode/getColumn',
+    			data:{"tableName":tableName},
+    			type:'post',
+    			async:false,
+    			success:function (result) {
+    				var arr = result.obj;
+    				formSelects.data('queryColumn', 'local', arr);
+    				formSelects.data('listColumn', 'local', arr);
+    				formSelects.data('editColumn', 'local', arr);
+    			}
+    		});
+	  	});
+	  	form.on('select(typeSel)',function(data){	  	
+	  		// 处理字段状态
+	  		$(data.elem).parents(".layui-form-item").find("select[st='columnFlag']").each(function(){
+	  			if(data.value=='2' || data.value=='3'){
+	  				$(this).find("option[value='2']").prop("disabled","disabled");
+	  				$(this).find("option[value='4']").prop("disabled","disabled");
+	  			}else if(data.value=='4'){
+	  				$(this).find("option[value='2']").prop("disabled","disabled");
+	  				$(this).find("option[value='4']").prop("disabled","");
+	  			}else{
+	  				$(this).find("option[value='2']").prop("disabled","");
+	  				$(this).find("option[value='4']").prop("disabled","disabled");
+	  			}
+	  			form.render();
+	  		});
+	  		// 处理字段数据组
+	  		$(data.elem).parents(".layui-form-item").find("input[st='columnList']").each(function(){
+	  			if(data.value=='1'){
+	  				$(this).val("");
+	  				$(this).hide();
+	  				$(this).attr("lay-verify","");
+	  			}else{
+	  				$(this).show();
+	  				$(this).attr("lay-verify","required");
+	  			}
+	  			form.render();
+	  		});
+	  	});
+        form.on('submit(saveBtn)',function (data) {
+        	var fromData = getFieldJsonData('form_data');
+        	var arr = new Array();
+        	$("#div_body ").find(".layui-form-item").each(function(){
+        		var vl = "{" + $(this).attr("id") + ":" + JSON.stringify(getFieldJsonData($(this).attr("id"))) + "}";
+        		arr.push(vl);
+        	});
+        	var index = layer.load(3, {shade: [0.3, '#000000']});
+        	$.ajax({
+           		url : '/ass/autocode/save',
+       			data:{"data":JSON.stringify(fromData),"setJson":JSON.stringify(arr),"cmd":"${cmd!}"}, 
+       			type:'post',
+       			async:false,
+       			success:function (result) {
+       				layer.close(index);
+       				if(result.success){
+       					layer.msg("提交成功", {icon: 6});
+       					parent.layer.close(parent.layer.getFrameIndex(window.name));
+       			 	}else{
+       		        	layer.msg("提交失败："+ result.msg, {icon: 5});
+       			 	}
+       			},
+       			error: function (XMLHttpRequest, textStatus, errorThrown) {
+       				layer.close(index);
+       			}
+       		});
+        });
+	});
+	
+	// layui formSelects
+	var formSelects = layui.formSelects;
+	formSelects.on('queryColumn', function(id, vals, val, isAdd, isDisabled){
+		if(isAdd){
+			$("#queryColumnSet").append(template(document.getElementById('columnSet').innerHTML,{flag:'1',columnCode:val.value,columnName:val.name}));
+		}else{
+			$("#queryColumnSet").find(".layui-form-item").each(function(){
+				var vf = $(this).attr("id");
+				if(vf.indexOf(val.value)>-1){
+					$(this).remove();
+				}
+			});
+		}
+		_from.render();
+    });
+	formSelects.on('listColumn', function(id, vals, val, isAdd, isDisabled){
+		if(isAdd){
+			$("#listColumnSet").append(template(document.getElementById('columnSet').innerHTML,{flag:'2',columnCode:val.value,columnName:val.name}));
+		}else{
+			$("#listColumnSet").find(".layui-form-item").each(function(){
+				var vf = $(this).attr("id");
+				if(vf.indexOf(val.value)>-1){
+					$(this).remove();
+				}
+			});
+		}
+		_from.render();
+    });
+	formSelects.on('editColumn', function(id, vals, val, isAdd, isDisabled){
+		if(isAdd){
+			$("#editColumnSet").append(template(document.getElementById('columnSet').innerHTML,{flag:'3',columnCode:val.value,columnName:val.name}));
+		}else{
+			$("#editColumnSet").find(".layui-form-item").each(function(){
+				var vf = $(this).attr("id");
+				if(vf.indexOf(val.value)>-1){
+					$(this).remove();
+				}
+			});
+		}
+		_from.render();
+    });
+	
+	$(function(){
+		 
+		var cmd = "${cmd!}";
+		if(cmd == "U"){
+			$.ajax({
+        		url : '/ass/autocode/getColumn',
+    			data:{"tableName":"${autoCode.tableCode!}"},
+    			type:'post',
+    			async:false,
+    			success:function (result) {
+    				var arr = result.obj;
+    				formSelects.data('queryColumn', 'local', arr);
+    				formSelects.data('listColumn', 'local', arr);
+    				formSelects.data('editColumn', 'local', arr);
+    			}
+    		});
+			
+			formSelects.value('queryColumn', '${autoCode.queryColumn!}'.split(','));
+			formSelects.value('listColumn', '${autoCode.listColumn!}'.split(','));
+			formSelects.value('editColumn', '${autoCode.editColumn!}'.split(','));
+			
+		}
+		
+		
+		
+		// 自适应高度
+		$(window).resize();
+		
+		$("#closeBtn").click(function(){
+	        parent.layer.close(parent.layer.getFrameIndex(window.name));
+		});
+	});
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#form_data').height($(window).height() - $('#from_btn').height()-45);
+		$('#div_body').height($(window).height() - $('#div_head').height()-90);
+	});
+</script>
+</body>
+</html>

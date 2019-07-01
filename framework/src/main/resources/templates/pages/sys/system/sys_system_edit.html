@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+  	<link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+	<form id="editForm" method="post" class="layui-form" lay-filter="form">
+		<input type="hidden" name="sysId" class="layui-input">
+		<div id="form_data" style="overflow-y: auto;">
+			<div class="layui-row">
+				<div class="layui-col-md12">
+	      			<div class="layui-form-item">
+						<label class="layui-form-label">系统编码</label>
+						<div class="layui-input-block">
+							<input type="text" name="sysCode" class="layui-input" lay-verify="required" placeholder="系统编码自动生成，如为空请重试" readonly>
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	    		</div>
+	    		<div class="layui-col-md12">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">系统名称</label>
+						<div class="layui-input-block">
+							<input type="text" name="sysName" class="layui-input" lay-verify="required" placeholder="请输入内容" >
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	    		</div>
+	    		<div class="layui-col-md12">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">系统状态</label>
+						<div class="layui-input-block">
+							<input type="radio" name="sysStatus" value="1" title="启用" checked>
+			                <input type="radio" name="sysStatus" value="0" title="禁用">
+						</div>
+					</div>
+	    		</div>
+	    		<div class="layui-col-md12">
+	  				<div class="layui-form-item">
+						<label class="layui-form-label">系统图标</label>
+						<div class="layui-input-block">
+							<input type="text" id="sysIcon" name="sysIcon" class="layui-input" lay-verify="required" placeholder="请选择系统图标" readonly >
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	  			</div>
+	  			<div class="layui-col-md12">
+	  				<div class="layui-form-item layui-form-text">
+						<label class="layui-form-label">资源描述</label>
+						<div class="layui-input-block">
+							<textarea name="sysRemark" class="layui-textarea" placeholder="请输入内容" maxlength="100"></textarea>
+						</div>
+					</div>
+	  			</div>
+	  		</div>
+		</div>	
+		<div id="from_btn" class="layui-row layui-form-btn">
+			<div class="layui-col-md12">
+				<a id="saveBtn" class="layui-btn" lay-submit lay-filter="saveBtn">提交</a>
+				<a id="closeBtn" class="layui-btn layui-btn-danger">关闭</a>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="../../../layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="../../../js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	layui.use('form', function(){
+	    var form = layui.form;
+	  	//表单初始赋值
+        form.val('form', {
+            "sysId": "${system.sysId!}",
+            "sysCode": "${system.sysCode!}",
+            "sysName": "${system.sysName!}",
+            "sysStatus": "${system.sysStatus!}",
+            "sysIcon": "${system.sysIcon!}",
+            "sysRemark": "${system.sysRemark!}"
+        });
+        form.on('submit(saveBtn)',function (data) {
+        	var index = layer.load(3, {shade: [0.3, '#000000']});
+        	$.ajax({
+        		url : '/sys/system/save',
+    			data:{"data":JSON.stringify(data.field),"cmd":"${cmd!}"},
+    			type:'post',
+    			async:false,
+    			success:function (result) {
+    				layer.close(index);
+    				if(result.success){
+    					layer.msg("提交成功", {icon: 6});
+    					parent.layer.close(parent.layer.getFrameIndex(window.name));
+    			 	}else{
+    		        	layer.msg("提交失败："+ result.msg, {icon: 5});
+    			 	}
+    			},
+    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+    				layer.close(index);
+    			}
+    		});
+        });
+	});
+	
+	$(function(){
+		// 自适应高度
+		$(window).resize();
+		
+		// 绑定事件监听
+		$("#sysIcon").click(function(){
+			layer.open({
+	            type: 2,
+	            title:['<b>图标选择</b>','font-size:15px;text-align:left;'],	
+	            content: ['/gotoIcon', 'yes'],
+	            area: ['95%', '90%'],
+	            btnAlign: 'c',
+	            anim: 2,
+	            btn: ['确认', '关闭'],
+	            yes: function (index, layero) {
+	            	var iframeWin = window[layero.find('iframe')[0]['name']];
+	            	var vl = iframeWin.setValse();
+	            	if(vl == ""){
+	            		layer.msg("请选择图标", {icon: 5});
+	            	}else{
+	            		$("#sysIcon").val(vl);
+	            		layer.close(index);
+	            	}
+	            }, btn2: function (index, layero) {
+	                layer.close(index);
+	            }
+	        });
+		});
+		
+		$("#closeBtn").click(function(){
+	        parent.layer.close(parent.layer.getFrameIndex(window.name));
+		});
+	});
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#form_data').height($(window).height() - $('#from_btn').height()-45);
+	});
+</script>
+</body>
+</html>

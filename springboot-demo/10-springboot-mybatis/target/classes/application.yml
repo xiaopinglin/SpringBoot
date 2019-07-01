@@ -1,0 +1,11 @@
+server:
+  port: 80  #服务端口
+spring:
+  datasource:  #数据库配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/test
+    username: root
+    password: root
+mybatis: #mybatis配置
+  mapper-locations: classpath:mybatis/mapper/*/*.xml

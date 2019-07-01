@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysSystemMapper">
+	<resultMap id="ResultMap" type="com.lxp.model.sys.SysSystem">
+	    <id column="sysId" jdbcType="VARCHAR" property="sysId" />
+	    <result column="sysCode" jdbcType="VARCHAR" property="sysCode" />
+	    <result column="sysName" jdbcType="VARCHAR" property="sysName" />
+	    <result column="sysStatus" jdbcType="VARCHAR" property="sysStatus" />
+	    <result column="sysRemark" jdbcType="VARCHAR" property="sysRemark" />
+	    <result column="sysSid" jdbcType="VARCHAR" property="sysSid" />
+	    <result column="sysIcon" jdbcType="VARCHAR" property="sysIcon" />
+	    <result column="createTime" jdbcType="DATE" property="createTime" />
+	    <result column="creator" jdbcType="VARCHAR" property="creator" />
+	    <result column="updateTime" jdbcType="DATE" property="updateTime" />
+	    <result column="updator" jdbcType="VARCHAR" property="updator" />
+	</resultMap>
+
+	<select id="querySysSystemByLikes" parameterType="com.lxp.model.sys.SysSystem" resultMap="ResultMap">
+		select * from sys_system w
+		<where>
+			<if test="sysId!=null and sysId!='' ">
+				AND w.sysId = #{sysId}
+			</if>
+			<if test="sysCode!=null and sysCode!='' ">
+				AND w.sysCode like CONCAT('%',#{sysCode},'%')
+			</if>
+			<if test="sysName!=null and sysName!='' ">
+				AND w.sysName like  CONCAT('%',#{sysName},'%')
+			</if>
+			<if test="sysStatus!=null and sysStatus!='' ">
+				AND w.sysStatus = #{sysStatus}
+			</if>
+		</where>
+		order by sysSid
+	</select>
+	
+	<select id="querySysSystemByEquals" parameterType="com.lxp.model.sys.SysSystem" resultMap="ResultMap">
+		select * from sys_system w
+		<where>
+			<if test="sysId!=null and sysId!='' ">
+				AND w.sysId != #{sysId}
+			</if>
+			<if test="sysCode!=null and sysCode!='' ">
+				AND w.sysCode = #{sysCode}
+			</if>
+			<if test="sysName!=null and sysName!='' ">
+				AND w.sysName = #{sysName}
+			</if>
+			<if test="sysStatus!=null and sysStatus!='' ">
+				AND w.sysStatus = #{sysStatus}
+			</if>
+		</where>
+		order by sysSid
+	</select>
+	
+	<select id="getMaxSysSystemCode" resultMap="ResultMap">
+		select max(sysCode) as sysCode from sys_system 
+	</select>
+	
+	<select id="getSysSystemSysSid" resultMap="ResultMap">
+		select max(sysSid) as sysSid from sys_system 
+	</select>
+	
+	<insert id="insertSysSystemData" parameterType="com.lxp.model.sys.SysSystem" >
+		insert into sys_system(
+			sysId,
+			sysCode,
+			sysName,
+			sysStatus,
+			sysRemark,
+			sysIcon,
+			sysSid,
+			createTime,
+			creator
+		  )values(
+		  	#{sysId,jdbcType=VARCHAR},
+			#{sysCode,jdbcType=VARCHAR},
+			#{sysName,jdbcType=VARCHAR},
+			#{sysStatus,jdbcType=VARCHAR},
+			#{sysRemark,jdbcType=VARCHAR},
+			#{sysIcon,jdbcType=VARCHAR},
+			#{sysSid,jdbcType=INTEGER},
+			#{createTime,jdbcType=VARCHAR},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<update id="updateSysSystemData" parameterType="com.lxp.model.sys.SysSystem">
+		update sys_system set
+			sysName= #{sysName,jdbcType=VARCHAR},
+			sysStatus =#{sysStatus,jdbcType=INTEGER},
+			sysRemark=#{sysRemark,jdbcType=VARCHAR},
+			sysIcon =#{sysIcon,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=VARCHAR},
+			updator = #{updator,jdbcType=VARCHAR}
+		where sysId = #{sysId}
+	</update>
+	
+	<delete id="deleteSysSystemData" parameterType="java.lang.String">
+		delete from sys_system where sysId = #{sysId}
+	</delete>
+</mapper>

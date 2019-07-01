@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+  	<link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+	<form id="editForm" method="post" class="layui-form" lay-filter="form">
+		<input type="hidden" name="deptId" value="">
+		<input type="hidden" name="deptPid" value="">
+		<div id="form_data" style="overflow-y: auto;">
+	  		<div class="layui-row">
+	  			<div class="layui-col-md12">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">部门编号</label>
+						<div class="layui-input-block">
+							<input type="text" name="deptCode" class="layui-input" lay-verify="required" value="" readonly>
+							<span class="layui-input-required">*</span>	
+						</div>
+					</div>
+	    		</div>
+	  			<div class="layui-col-md12">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">部门名称</label>
+						<div class="layui-input-block">
+							<input type="text" name="deptName" class="layui-input" lay-verify="required" value="" >
+							<span class="layui-input-required">*</span>	
+						</div>
+					</div>
+	    		</div>
+	  			<div class="layui-col-md12">
+	      			<div class="layui-form-item">
+						<label class="layui-form-label">上级部门</label>
+						<div class="layui-input-block">
+							<input type="text" name="deptPname" class="layui-input" lay-verify="required" value="" readonly>
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	    		</div>
+	  			<div class="layui-col-md12">
+	  				<div class="layui-form-item">
+						<label class="layui-form-label">所属机构</label>
+						<div class="layui-input-block">
+							<select id="orgId" name="orgId" lay-verify="required">
+								<option value=""></option>
+								<#if sysOrgans??> 
+									<#list sysOrgans as so>
+										<option value="${so.orgId!}" >${so.orgName!}</option>
+									</#list> 
+								</#if>
+							</select>
+						</div>
+					</div>
+	    		</div>
+	    		<div class="layui-col-md12">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">是否启用</label>
+						<div class="layui-input-block">
+							<input type="radio" name="deptStatus" value="1" title="启用" checked>
+			                <input type="radio" name="deptStatus" value="0" title="禁用">
+						</div>
+					</div>
+	    		</div>
+	    		<div class="layui-col-md12">
+	  				<div class="layui-form-item layui-form-text">
+						<label class="layui-form-label">部门描述</label>
+						<div class="layui-input-block">
+							<textarea class="layui-textarea" name="deptRemark" placeholder="请输入内容" ></textarea>
+						</div>
+					</div>
+	  			</div>
+	  		</div>
+		</div>	
+		<div id="from_btn" class="layui-row layui-form-btn">
+			<div class="layui-col-md12">
+				<a id="saveBtn" class="layui-btn" lay-submit lay-filter="saveBtn">提交</a>
+				<a id="closeBtn" class="layui-btn layui-btn-danger">关闭</a>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	layui.use('form', function(){
+		var form = layui.form;
+		//表单初始赋值
+        form.val('form', {
+            "deptId": "${sysDept.deptId!}",
+            "deptPid": "${sysDept.deptPid!}",
+            "deptCode": "${sysDept.deptCode!}",
+            "deptName": "${sysDept.deptName!}",
+            "deptPname": "${sysDept.deptPname!}",
+            "orgId": "${sysDept.orgId!}",
+            "deptStatus": "${sysDept.deptStatus!}",
+            "deptRemark": "${sysDept.deptRemark!}"
+        });
+        form.on('submit(saveBtn)',function (data) {
+        	var index = layer.load(3, {shade: [0.3, '#000000']});
+        	$.ajax({
+        		url : '/sys/dept/save',
+    			data:{"data":JSON.stringify(data.field),"cmd":"${cmd!}"},
+    			type:'post',
+    			async:false,
+    			success:function (result) {
+    				layer.close(index);
+    				if(result.success){
+    					layer.msg("提交成功", {icon: 6});
+    					parent.layer.close(parent.layer.getFrameIndex(window.name));
+    					// 刷新父页面树
+    					parent.refreshZtree(data.field,"${cmd!}");
+    			 	}else{
+    		        	layer.msg("提交失败："+ result.msg, {icon: 5});
+    			 	}
+    			},
+    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+    				layer.close(index);
+    			}
+    		});
+        });
+	});
+	
+	$(function(){
+		$(window).resize();
+		
+		// 绑定事件监听
+		$("#closeBtn").click(function(){
+	        parent.layer.close(parent.layer.getFrameIndex(window.name));
+		});
+	});
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#form_data').height($(window).height() - $('#from_btn').height()-45);
+	});
+</script>
+</body>
+</html>

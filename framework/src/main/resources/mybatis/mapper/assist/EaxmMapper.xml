@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.assist.ExamMapper">
+	<resultMap id="baseResultMap" type="com.lxp.model.assist.Exam">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="nper" jdbcType="VARCHAR" property="nper" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+	    <result column="title" jdbcType="VARCHAR" property="title" />
+	    <result column="x_a" jdbcType="VARCHAR" property="xa" />
+	    <result column="x_b" jdbcType="VARCHAR" property="xb" />
+	    <result column="x_c" jdbcType="VARCHAR" property="xc" />
+	    <result column="x_d" jdbcType="VARCHAR" property="xd" />
+	    <result column="x_e" jdbcType="VARCHAR" property="xe" />
+	    <result column="d_a" jdbcType="VARCHAR" property="da" />
+	    <result column="sn" jdbcType="INTEGER" property="sn" />
+	</resultMap>
+
+	<select id="queryExamByLike" resultMap="baseResultMap">
+		select w.* from t_eaxm w
+		<where>
+			<if test="title!=null and title!='' ">
+				AND w.title like CONCAT('%',#{title},'%') 
+			</if>
+			<if test="nper!=null and nper!='' ">
+				AND w.nper = #{nper}  
+			</if>
+		</where>
+		order by sn
+	</select>
+	
+	<select id="getAllNper" resultMap="baseResultMap">
+		SELECT  DISTINCT w.nper FROM t_eaxm w
+	</select>
+	
+	<insert id="insertExamBylist" parameterType="java.util.List">	
+		insert into t_eaxm (id,nper,type,title,x_a,x_b,x_c,x_d,x_e,d_a,sn) values
+        <foreach collection="list" item="item" index="index" separator=",">
+	        (#{item.id},#{item.nper},#{item.type},#{item.title},#{item.xa},#{item.xb},#{item.xc},#{item.xd},#{item.xe},#{item.da},#{item.sn})
+        </foreach>
+	</insert>
+	
+	<delete id="cleanAllExam" parameterType="java.lang.String">
+		delete from t_eaxm where nper = #{nper} 
+	</delete>
+</mapper>

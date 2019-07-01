@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+  	<link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-row">
+		<div class="layui-col-md12">
+			<div class="layui-elem-quote">
+		        <div style="color:red">请选择导出格式！</div>
+		    </div>
+		</div>
+	</div>
+	<div class="layui-row">
+		<div class="layui-col-md12">
+			<form id="editForm" method="post" method="post" enctype="multipart/form-data" class="layui-form layui-form-pane" lay-filter="form">
+				<div id="form_data" style="overflow-y: auto;">
+					<div class="layui-row">
+						<div class="layui-col-md12">
+							<div class="layui-form-item">
+								<label class="layui-form-label">导出格式</label>
+								<div class="layui-input-block">
+									<input type="hidden" id="exportflag" name="exportflag" value="1">
+									<input type="radio" name="excelRadio" title="Excel表格" value="1" lay-filter="flag" checked >
+									<input type="radio" name="excelRadio" title="word文档" value="2" lay-filter="flag">
+								</div>
+							</div>
+			    		</div>
+			  		</div>
+				</div>	
+			</form>
+		</div>
+	</div>
+	<table class="layui-hide" id="TableData" lay-filter="tableFilter"></table>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	layui.use(['table','form','upload'],function () {
+		var table=layui.table;
+    	var form = layui.form;
+    	form.render();
+    	form.on('radio(flag)', function (data) {
+    	    if(data.value==""){
+    	    	$("#exportflag").val("1");
+    	    }else{
+    	    	$("#exportflag").val(data.value);
+    	    };
+    	});
+	});
+	
+</script>
+</body>
+</html>

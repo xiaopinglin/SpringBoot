@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysNoticeMapper">
+	<resultMap id="resultMap" type="com.lxp.model.sys.SysNotice">
+		<id column="ntId" property="ntId" jdbcType="VARCHAR" />
+		<result column="ntTitle" property="ntTitle" jdbcType="VARCHAR"/>
+		<result column="ntContent" property="ntContent" jdbcType="VARCHAR"/>
+		<result column="ifTop" property="ifTop" jdbcType="VARCHAR"/>
+		<result column="createTime" property="createTime" jdbcType="DATE" />
+	    <result column="creator"  property="creator" jdbcType="VARCHAR"/>
+	    <result column="updateTime"  property="updateTime" jdbcType="DATE"/>
+	    <result column="updator" property="updator" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="queryAllSysNotices" parameterType="com.lxp.model.sys.SysNotice" resultMap="resultMap">
+		select w.* from sys_notice w
+		<where>
+			<if test="ntId!=null and ntId!=''">
+				AND w.ntId = #{ntId}
+			</if>
+			<if test="ntTitle!=null and ntTitle!=''">
+				AND w.ntTitle like CONCAT('%',#{ntTitle},'%')
+			</if>
+			<if test="ifTop!=null and ifTop!=''">
+				AND w.ifTop  = #{ifTop}
+			</if>
+		</where>
+		order by w.ifTop DESC,w.ntId
+	</select>
+	
+	<insert id="insertSysNotice" parameterType="com.lxp.model.sys.SysNotice">
+		insert into sys_notice(
+			ntId,
+			ntTitle,
+			ntContent,
+			ifTop,
+			createTime,
+			creator
+		  )values(
+		  	#{ntId,jdbcType=VARCHAR},
+			#{ntTitle,jdbcType=VARCHAR},
+			#{ntContent,jdbcType=VARCHAR},
+			#{ifTop,jdbcType=VARCHAR},
+			#{createTime,jdbcType=DATE},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<update id="updateSysNotice" parameterType="com.lxp.model.sys.SysNotice">
+		update sys_notice set 
+			ntTitle = #{ntTitle,jdbcType=VARCHAR},
+			ntContent = #{ntContent,jdbcType=VARCHAR},
+			ifTop = #{ifTop,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=DATE},
+			updator = #{updator,jdbcType=VARCHAR}
+		  WHERE ntId = #{ntId}
+	</update>
+	
+	<delete id="deleteSysNotice" parameterType="java.lang.String">
+		delete from sys_notice where ntId = #{ntId}
+	</delete>
+	
+</mapper>

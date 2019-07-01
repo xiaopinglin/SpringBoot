@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysOrganMapper">
+	<resultMap id="ResultMap" type="com.lxp.model.sys.SysOrgan">
+	    <id column="orgId" jdbcType="VARCHAR" property="orgId" />
+	    <result column="orgCode" jdbcType="VARCHAR" property="orgCode" />
+	    <result column="orgName" jdbcType="VARCHAR" property="orgName" />
+	    <result column="orgStatus" jdbcType="VARCHAR" property="orgStatus" />
+	    <result column="orgRemark" jdbcType="VARCHAR" property="orgRemark" />
+	    <result column="orgSid" jdbcType="VARCHAR" property="orgSid" />
+	    <result column="createTime" jdbcType="DATE" property="createTime" />
+	    <result column="creator" jdbcType="VARCHAR" property="creator" />
+	    <result column="updateTime" jdbcType="DATE" property="updateTime" />
+	    <result column="updator" jdbcType="VARCHAR" property="updator" />
+	</resultMap>
+
+	<select id="querySysOrganByLikes" parameterType="com.lxp.model.sys.SysOrgan" resultMap="ResultMap">
+		select * from sys_organ w
+		<where>
+			<if test="orgId!=null and orgId!='' ">
+				AND w.orgId = #{orgId}
+			</if>
+			<if test="orgCode!=null and orgCode!='' ">
+				AND w.orgCode like CONCAT('%',#{orgCode},'%')
+			</if>
+			<if test="orgName!=null and orgName!='' ">
+				AND w.orgName like  CONCAT('%',#{orgName},'%')
+			</if>
+			<if test="orgStatus!=null and orgStatus!='' ">
+				AND w.orgStatus = #{orgStatus}
+			</if>
+		</where>
+		order by orgId
+	</select>
+	
+	<select id="querySysOrganByEquals" parameterType="com.lxp.model.sys.SysOrgan" resultMap="ResultMap">
+		select * from sys_organ w
+		<where>
+			<if test="orgId!=null and orgId!='' ">
+				AND w.orgId != #{orgId}
+			</if>
+			<if test="orgCode!=null and orgCode!='' ">
+				AND w.orgCode = #{orgCode}
+			</if>
+			<if test="orgName!=null and orgName!='' ">
+				AND w.orgName = #{orgName}
+			</if>
+			<if test="orgStatus!=null and orgStatus!='' ">
+				AND w.orgStatus = #{orgStatus}
+			</if>
+		</where>
+		order by orgId
+	</select>
+	
+	<select id="getMaxSysOrganCode" resultMap="ResultMap">
+		select max(orgCode) as orgCode from sys_organ 
+	</select>
+	
+	<select id="getSysOrganOrgSid" resultMap="ResultMap">
+		select max(orgSid) as orgSid from sys_organ 
+	</select>
+	
+	<insert id="insertSysOrganData" parameterType="com.lxp.model.sys.SysOrgan" >
+		insert into sys_organ(
+			orgId,
+			orgCode,
+			orgName,
+			orgStatus,
+			orgSid,
+			orgRemark,
+			createTime,
+			creator
+		  )values(
+		  	#{orgId,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{orgName,jdbcType=VARCHAR},
+			#{orgStatus,jdbcType=VARCHAR},
+			#{orgSid,jdbcType=INTEGER},
+			#{orgRemark,jdbcType=VARCHAR},
+			#{createTime,jdbcType=VARCHAR},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<update id="updateSysOrganData" parameterType="com.lxp.model.sys.SysOrgan">
+		update sys_organ set
+			orgName= #{orgName,jdbcType=VARCHAR},
+			orgStatus =#{orgStatus,jdbcType=INTEGER},
+			orgRemark=#{orgRemark,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=VARCHAR},
+			updator = #{updator,jdbcType=VARCHAR}
+		where orgId = #{orgId}
+	</update>
+	
+	<delete id="deleteSysOrganData" parameterType="java.lang.String">
+		delete from sys_organ where orgId = #{orgId}
+	</delete>
+</mapper>

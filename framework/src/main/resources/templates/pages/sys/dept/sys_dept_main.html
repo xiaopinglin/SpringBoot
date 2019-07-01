@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>部门管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+    <link rel="stylesheet" href="${ctx}/js/plugins/ztree/css/metroStyle/metroStyle.css">
+</head>
+<body>
+<div class="layui-fluid">
+    <div id="div_nav" class="layui-elem-quote">
+		<div class="layui-breadcrumb">
+			<a><i class="layui-icon layui-icon-home"></i>首页</a>
+			<a><i class="layui-icon layui-icon-set"></i>基础模块</a>
+			<a><i class="layui-icon layui-icon-location"></i>部门管理</a>
+	    </div>
+    </div>
+    <div class="layui-row">
+   		<div class="layui-col-md3 layui-tree-left">
+			<div class="layui-ztree-head">
+				<a id="expandAllBtn"  class="layui-btn">展开</a>
+				<a id="collapseAllBtn"class="layui-btn">折叠</a>
+				<a class="layui-btn layui-btn-normal" lay-submit lay-filter="againBtn">重排</a>
+				<a class="layui-btn layui-btn-warm" lay-submit lay-filter="upMoveBtn">上移</a>
+				<a class="layui-btn layui-btn-warm" lay-submit lay-filter="downMoveBtn">下移</a>
+	        </div>
+	        <div id="div_tree" style="overflow-y: auto;padding-top:10px">
+	        	<ul id="treeData" class="ztree"></ul>
+	        </div>
+   		</div>
+    	<div class="layui-col-md9 layui-tree-right">
+   			<div class="layui-ztree-head">
+   				<a class="layui-btn layui-btn-normal" lay-submit lay-filter="addBtn">新增</a>
+				<a class="layui-btn layui-btn-warm"   lay-submit lay-filter="editBtn">修改</a>
+				<a class="layui-btn layui-btn-danger" lay-submit lay-filter="delBtn">删除</a>
+   			</div>
+   			<div id="div_data" style="overflow-y: auto;padding-top:10px">
+   				<form lay-filter="form" class="layui-form layui-form-pane" action="">
+   					<div class="layui-form-item">
+			            <label class="layui-form-label">部门编号</label>
+			            <div class="layui-input-block">
+			                <input type="text" id="deptCode" name="deptCode" class="layui-input" disabled>
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">部门名称</label>
+			            <div class="layui-input-block">
+			                <input type="text" id="deptName" name="deptName" class="layui-input" disabled>
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">所属机构</label>
+			            <div class="layui-input-block">
+			                <select id="orgId" name="orgId" disabled>
+								<option value=""></option>
+								<#if sysOrgans??> 
+									<#list sysOrgans as so>
+										<option value="${so.orgId!}" >${so.orgName!}</option>
+									</#list> 
+								</#if>
+							</select>
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">是否启用</label>
+			            <div class="layui-input-block">
+			            	 <select id="deptStatus" name="deptStatus" disabled>
+			            	 	<option value=""></option>
+								<option value="1">启用</option>
+								<option value="0">禁用</option>
+			            	 </select>
+			            </div>
+			        </div>
+			        <div class="layui-form-item layui-form-text">
+			            <label class="layui-form-label">资源描述</label>
+			            <div class="layui-input-block">
+			                <textarea class="layui-textarea" id="deptRemark" name="deptRemark" placeholder="请输入内容" disabled></textarea>
+			            </div>
+			        </div>
+   				</form>
+   			</div>
+   		</div>
+    </div>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<!-- Ztree -->
+<script type="text/javascript" src="${ctx}/js/plugins/ztree/js/jquery.ztree.all.min.js"></script>
+<script>
+	var _form;
+    layui.use(['element','form'], function(){
+    	var form  =layui.form;
+    	var element = layui.element;
+    	_form = layui.form
+    	form.on('submit(downMoveBtn)',function (data) {
+    		var treeObj = $.fn.zTree.getZTreeObj("treeData");
+			var nodes = treeObj.getSelectedNodes();
+			if(nodes.length > 0){
+				var treeNode = nodes[0];
+				if(treeNode.type=="1"){
+					layer.msg("非部门无法操作", {icon: 5});
+					return false;
+				}
+				var index = layer.load(3, {shade: [0.3, '#000000']});
+				$.ajax({
+	        		url : '/sys/dept/moveUpAnddown',
+	    			data:{"flag":"1","id":treeNode.deptId},
+	    			type:'post',
+	    			async:false,
+	    			success:function (result) {
+	    				if(result.success){
+	    					var targetNode = treeObj.getNodeByParam("id", result.obj.deptCode, null);;
+	    					treeObj.moveNode(targetNode, treeNode, "next");
+	    					layer.close(index);
+	    			 	}else{
+	    		        	layer.msg("下移失败：" + result.msg, {icon: 5});
+	    		        	layer.close(index);
+	    			 	}
+	    			},
+	    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+	    				layer.close(index);
+	    			}
+	    		});
+			}else{
+				layer.msg("请选择节点！", {icon: 5});
+			}
+        	return false;
+        });
+		form.on('submit(upMoveBtn)',function (data) {
+			var treeObj = $.fn.zTree.getZTreeObj("treeData");
+			var nodes = treeObj.getSelectedNodes();
+			if(nodes.length > 0){
+				var treeNode = nodes[0];
+				if(treeNode.type=="1"){
+					layer.msg("非部门无法操作", {icon: 5});
+					return false;
+				}
+				var index = layer.load(3, {shade: [0.3, '#000000']});
+				$.ajax({
+	        		url : '/sys/dept/moveUpAnddown',
+	    			data:{"flag":"2","id":treeNode.deptId},
+	    			type:'post',
+	    			async:false,
+	    			success:function (result) {
+	    				if(result.success){
+	    					var targetNode = treeObj.getNodeByParam("id", result.obj.deptCode, null);;
+	    					treeObj.moveNode(targetNode, treeNode, "prev");
+	    					layer.close(index);
+	    			 	}else{
+	    		        	layer.msg("上移失败：" + result.msg, {icon: 5});
+	    		        	layer.close(index);
+	    			 	}
+	    			},
+	    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+	    				layer.close(index);
+	    			}
+	    		});
+			}else{
+				layer.msg("请选择节点！", {icon: 5});
+			}
+        	return false;
+		});
+		form.on('submit(againBtn)',function (data) {
+			layer.confirm('是否重新排列',function (index) {
+				var index = layer.load(3, {shade: [0.3, '#000000']});
+	        	$.ajax({
+	        		url : '/sys/dept/rearrange',
+	    			data:{"id":""},
+	    			type:'post',
+	    			async:false,
+	    			success:function (result) {
+	    				layer.close(index);
+	    				if(result.success){
+	    					layer.msg("重排成功，刷新本页面！", {icon: 6});
+	    			 	}else{
+	    		        	layer.msg("重排失败", {icon: 5});
+	    			 	}
+	    			},
+	    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+	    				layer.close(index);
+	    			}
+	    		});	
+	        });
+			return false;
+		});
+		form.on('submit(addBtn)',function (data) {
+			var treeObj = $.fn.zTree.getZTreeObj("treeData");
+			var nodes = treeObj.getSelectedNodes();
+			if(nodes.length > 0){
+				var treeNode = nodes[0];
+				layer.open({
+		            type: 2,
+		            title:['<b>新增部门</b>','font-size:15px;text-align:left;'],	
+		            content: ["/sys/dept/edit?cmd=A&deptId=" + treeNode.deptId   + "&type=" + treeNode.type, 'yes'],
+		            area: ['750px', '90%'],
+		        });
+				return false;
+			}else{
+				layer.msg("点击左侧资源视图选择上级资源", {icon: 5});
+				return false;
+			}
+		});
+		form.on('submit(editBtn)',function (data) {
+			var treeObj = $.fn.zTree.getZTreeObj("treeData");
+			var nodes = treeObj.getSelectedNodes();
+			if(nodes.length > 0){
+				var treeNode = nodes[0];
+				if(treeNode.type=="1"){
+					layer.msg("非部门无法操作", {icon: 5});
+					return false;
+				}
+				layer.open({
+		            type: 2,
+		            title:['<b>修改部门</b>','font-size:15px;text-align:left;'],	
+		            content: ["/sys/dept/edit?cmd=U&deptId=" + treeNode.deptId + "&type=" + treeNode.type, 'yes'],
+		            area: ['750px', '90%'],
+		        });
+				return false;
+			}else{
+				layer.msg("点击左侧资源视图选择上级资源", {icon: 5});
+				return false;
+			}
+        });
+		form.on('submit(delBtn)',function (data) {
+			var treeObj = $.fn.zTree.getZTreeObj("treeData");
+			var nodes = treeObj.getSelectedNodes();
+			if(nodes.length > 0){
+				var treeNode = nodes[0];
+				if(treeNode.type=="1"){
+					layer.msg("非部门无法操作", {icon: 5});
+					return false;
+				}
+				layer.confirm('确认删除该部门吗？若有下级部门将会一起删除',function (index) {
+					var index = layer.load(3, {shade: [0.3, '#000000']});
+		        	$.ajax({
+		        		url : '/sys/dept/del',
+		    			data:{"id":treeNode.deptId},
+		    			type:'post',
+		    			async:false,
+		    			success:function (result) {
+		    				layer.close(index);
+		    				if(result.success){
+		    					layer.msg("删除成功", {icon: 6});
+		    					treeObj.removeNode(nodes[0]);
+		    			 	}else{
+		    		        	layer.msg("删除失败："+ result.msg, {icon: 5});
+		    			 	}
+		    			},
+		    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+		    				layer.close(index);
+		    			}
+		    		});	
+		        });
+		    	return false;
+			}else{
+				layer.msg("点击左侧资源视图选择需要操作的资源", {icon: 5});
+				return false;
+			}
+		});
+    });
+    
+    $(function(){
+    	// 初始化树
+    	$.fn.zTree.init($("#treeData"), setting, zNodes);
+
+		//树：绑定事件
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+		
+		// 页面高度自适应
+    	$(window).resize();
+    });
+   
+    //树：数据源
+	var zNodes = JSON.parse('${nodes!}');
+	//树：设置
+	var setting = {
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"name"
+			},
+			simpleData: {
+				enable: true
+			}
+		},
+		edit: {
+			enable: true,
+			showRemoveBtn: false,
+			showRenameBtn: false,
+			drag: {
+				isCopy: false,
+				isMove: true,
+				prev: true,
+			  	next: true,
+				inner: false
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+	
+	//树：点击节点事件
+	function onClickTree(event, treeId, treeNode,clickFlag){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		var node = nodes[0];
+        if (node){
+        	var obj = node.nodeObj;
+        	if(JSON.stringify(obj)!="null"){
+                _form.val('form', {
+                	"deptCode": obj.deptCode,
+                	"deptName": obj.deptName,
+                	"orgId": obj.orgId,
+                	"deptStatus": obj.deptStatus,
+                	"deptRemark": obj.deptRemark
+                });
+        	}else{
+        		layer.msg("非部门节点", {icon: 5});
+        	}
+        }
+	}
+	
+	//树：展开，折叠节点
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			layer.msg("请先选择一个父节点", {icon: 5});
+		}
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	
+	// 刷新树
+	function refreshZtree(data,cmd){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+        var node = nodes[0];
+        if (node){
+        	if(cmd=="U"){
+        		node.id = data.deptCode;
+        		node.pId = data.deptPid;
+        		node.name = data.deptName;
+        		node.type = "2";
+        		node.deptId = data.deptId;
+        		node.orgId = data.orgId;
+        		node.nodeObj = data;
+        		
+        		zTree.updateNode(node);
+        	}else{
+        		var obj = {};
+            	obj.id = data.deptCode;
+            	obj.pId = data.deptPid;
+            	obj.name = data.deptName;
+            	obj.type =  "2";
+            	obj.deptId = data.deptId;
+            	obj.orgId = data.orgId;
+            	obj.nodeObj = data;
+            	
+        		zTree.addNodes(node,obj);
+        	}
+        } 
+	}
+
+	//自动缩放
+	$(window).resize(function() {
+		$('#div_tree').height($(window).height() - $('#div_nav').height() - 140);
+		$('#div_data').height($(window).height() - $('#div_nav').height() - 140);
+	});
+</script>
+</body>

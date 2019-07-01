@@ -1,0 +1,313 @@
+一、命名风格
+	
+	1、类的命名
+
+		类名使用 UpperCamelCase 风格，必须遵从驼峰形式，以下情形除外：DO / BO / DTO / VO / AO！
+
+		正例：MarcoPolo / UserDO / XmlService / TcpUdpDeal / TaPromotion
+
+		反例：macroPolo / UserDo / XMLService / TCPUDPDeal / TAPromotion
+
+	2、方法名、参数名、成员变量、局部变量
+
+		方法名、参数名、成员变量、局部变量都统一使用 lowerCamelCase 风格，必须遵从驼峰形式
+
+		正例： localValue / getHttpMessage() / inputUserId
+
+	3、常量
+
+		常量命名全部大写，单词间用下划线隔开，力求语义表达完整清楚，不要嫌名字长！
+
+		正例：MAX_STOCK_COUNT 
+
+		反例：MAX_COUNT
+
+		注意：不要使用一个常量类维护所有常量，按常量功能进行归类、分开维护。这样有利于查找、理解、维护。
+
+	4、抽象类，异常类，测试类
+
+		抽象类命名使用 Abstract 或者 Base 开头；异常类命名使用 Exception 结尾；测试类命名以它要测试的类的名称开始以 Test 结尾
+
+		正例：LoginServiceTest / CommonHandleException
+
+	5、Service 和 DAO 类
+
+		定义 Service 和 DAO 类，基于SOA的理念暴露出来的服务一定是接口，内部的实现类用 Impl 的后缀与接口区别。
+
+		正例：LoginService / LoginServiceImpl
+
+		另外接口类中的方法和属性不要加任何修饰符号（public 也不要加），保持代码的简洁性，并加上有效的 Javadoc 注释。
+
+		正例：接口方法签名：Object getDeptTree() throws Exception;
+
+		反例：接口方法定义：public abstract Object getDeptTree() throws Exception;
+
+		接口方法命名规约：（根据实际情况，仅供参考）
+			
+			1） 获取单个对象的方法用 getXxxxxx 。
+			
+			2） 获取多个对象的方法用 getXxxxxxList 。
+			
+			3） 获取统计值的方法用 getXxxxxxCount 。
+			
+			4） 插入的方法用 saveXxxxxx/insertXxxxxx 。
+			
+			5） 删除的方法用 removeXxxxxx/deleteXxxxxx 。
+			
+			6） 修改的方法用 updateXxxxxx 。
+
+	6、其他
+
+		为了达到代码自解释的目标，任何自定义编程元素在命名时，使用尽量完整的单词组合来表达其意。
+
+		正例：从远程仓库拉取代码的类命名为PullCodeFromRemoteRepository
+
+		反例：变量int a;的随意命名方式。
+
+		枚举类名建议带上 Enum 后缀，枚举成员名称需要全大写，单词间用下划线隔开
+
+		正例：ConstantsEnum  枚举成员：WAIT / SUCCESS
+
+二、 代码格式
+	
+	1、大小括号的使用约定
+
+		如果是大括号内为空，则简洁地写成{}即可，不需要换行；
+
+		正例：
+
+		public ChangeNullString() {}
+
+		反例：
+
+		public ChangeNullString() {
+
+		}
+
+		如果是非空代码块则：
+			
+			1） 左大括号前不换行。
+
+			2） 左大括号后换行。
+
+			3） 右大括号前换行。
+
+			4） 右大括号后还有 else 等代码则不换行 表示终止的右大括号后必须换行。
+
+			正例：
+
+			public static String ChangeNullString(String str) {
+				if ("".equals(str) || "null".equals(str) || str == null || "undefined".equals(str)) {
+					return "";
+				} else {
+					return str;
+				}
+			}
+
+			反例：
+
+			public static String ChangeNullString(String str) 
+			{if ("".equals(str) || "null".equals(str) || str == null || "undefined".equals(str)) {
+					return "";
+				} else { return str;
+				}}
+			
+			左小括号和字符之间不出现空格；同样右小括号和字符之间也不出现空格。
+
+			正例：
+
+			if ( a==b ){}
+			
+			反例：
+
+			if ( a == b ){}
+
+	2、if/for/while/switch/do 等保留字与括号之间都必须加空格。
+
+		正例：
+
+		if (...){}   for (...){}
+
+		反例：
+
+		if(...){}  for(...){}
+
+	3、缩进
+
+		一般使用四个空格来缩进，禁止使用Tab字符
+
+		正例：
+
+		if ( a==b ){
+			getXxxxxxCount();
+		}
+
+	4、注释的双斜线与注释内容之间有且仅有一个空格
+
+		正例：
+
+		if ( a==b ){
+			// 获取xxxxx的总数
+			getXxxxxxCount();
+		}	
+
+		反例：
+
+		if ( a==b ){
+			//获取xxxxx的总数
+			//   获取xxxxx的总数
+			getXxxxxxCount();
+		}	
+
+	5、方法体内的执行语句组、变量的定义语句组、不同的业务逻辑之间或者不同的语义之间插入一个空行。相同业务逻辑和语义之间不需要插入空行
+
+		参考：LoginServiceImpl.java
+
+三、OOP规约
+
+	1、所有的覆写方法，必须加@Override 注解
+
+	2、不能使用过时的类或方法，使用的方法中间加了横线的。
+
+		Date dt = new Date(datetime);
+
+	3、Object 的 equals 方法容易抛空指针异常，应使用常量或确定有值的对象来调用 equals
+
+		正例："test".equals(object);
+		
+		反例：object.equals("test");
+
+	4、所有的相同类型的包装类对象之间值的比较，全部使用 equals 方法比较。
+
+		说明：包装类的 equals 方法重写了 Object 的 equals 方法。
+
+
+	5、循环体内，字符串的连接方式，使用 StringBuilder 的 append 方法进行扩展。
+
+		String str = "start";
+  		for (int i = 0; i < 100; i++) {
+  			str = str + "hello";
+		}
+
+		说明：反编译出的字节码文件显示每次循环都会 new 出一个 StringBuilder 对象，然后进行 append 操作，
+
+			最后通过 toString 方法返回 String 对象，造成内存资源浪费。
+
+	6、慎用 Object 的 clone 方法来拷贝对象。
+
+		 说明：对象的 clone 方法默认是浅拷贝，若想实现深拷贝需要重写 clone 方法实现属性对象的拷贝。
+
+四、集合操作
+
+	1、使用集合转数组的方法
+
+		使用集合转数组的方法，必须使用集合的 toArray(T[] array)，传入的是类型完全一样的数组，大小就是 list.size()。
+		
+		说明：使用 toArray 带参方法，入参分配的数组空间不够大时，toArray 方法内部将重新分配 内存空间，并返回新数组地址；如果数组元素大于实际所需，
+		
+			下标为[ list.size() ]的数组 元素将被置为 null，
+			
+			其它数组元素保持原值，因此最好将方法入参数组大小定义与集合元素 个数一致。 
+
+		正例：
+
+		List<String> list = new ArrayList<String>(2);
+		list.add("guan");
+		list.add("bao");
+
+		String[] array = new String[list.size()];
+		array = list.toArray(array);
+		
+		反例：直接使用 toArray 无参方法存在问题，此方法返回值只能是 Object[]类，
+
+			若强转其它 类型数组将出现 ClassCastException 错误。
+
+	2、不要在 foreach 循环里进行元素的 remove/add 操作
+
+		不要在 foreach 循环里进行元素的 remove/add 操作。remove 元素请使用 Iterator方式，
+
+		如果并发操作，需要对 Iterator 对象加锁。
+		
+		正例：
+		
+		  Iterator<String> iterator = list.iterator();
+		  while (iterator.hasNext()) {
+		      String item = iterator.next();
+		      if (删除元素的条件) {
+		        iterator.remove();
+		      }		
+		  }
+		
+		反例：
+
+		  List<String> list = new ArrayList<String>();
+		  list.add("1");
+		  list.add("2");
+		  for (String item : list) {
+		    if ("1".equals(item)) {
+		      list.remove(item);
+		    }
+		  }
+
+	3、使用 entrySet 遍历 Map 类集合 KV，而不是 keySet 方式进行遍历。
+
+		说明：遍历的时长问题，使用entrySet自带key,和value,而使用keySet只有key,如果还需要获取value，就必须在
+
+			使用get(key)的方法，多了一次遍历。	
+
+五、控制语句
+	
+	1、switch
+
+		在一个 switch 块内，每个 case 要么通过 break/return 等来终止，要么注释说明程序将继续执行到哪一个 
+
+		case 为止；在一个 switch 块内，都必须包含一个 default 语句并且 放在最后，即使它什么代码也没有。
+
+	2、if/else/for/while/do
+
+		这些循环体必须使用大括号，即使只有一行代码，避免出现一下情况。
+
+		if (condition) statements;
+	
+	3、循环体中的语句要考量性能，以下操作尽量移至循环体外处理。
+
+		定义对象、变量、 获取数据库连接，进行不必要的 try-catch 操作。
+
+六、注释规约
+	
+	1、类、类属性、类方法的注释必须使用 Javadoc 规范，使用/**内容*/ 格式，并且必须添加创建者和创建日期。
+
+	
+	2、所有的抽象方法（包括接口中的方法）必须要用 Javadoc 注释、除了返回值、参数、 异常说明外，还必须指出该方法做什么事情，实现什么功能。 
+	
+	
+	3、方法内部单行注释，在被注释语句上方另起一行。
+
+		单行注解：// 注释
+
+		多行注解：/* 注释 */
+	
+	5、所有的枚举类型字段必须要有注释，说明每个数据项的用途。
+	
+	6、代码修改的同时，注释也要进行相应的修改。
+	
+	7、谨慎注释掉代码,如果无用，则删除。
+
+七、异常处理
+
+	1、捕获异常是为了处理它，不要捕获了却什么都不处理，如果不想处理它，请将该异常抛给它的调用者。
+	
+	最外层的业务使用者，必须处理异常，将其转化为用户可以理解的内容。
+
+八、数据库（mysql）
+
+	1、所有的操作都涉及到数据库的性能优化问题。（后续在总结）
+
+		字段的定义，字段数据类型的选择，索引创建的原则，什么时候适合拆分表。
+
+		数据库的操作优化。
+
+
+
+
+

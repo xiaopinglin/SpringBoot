@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+  	<link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-row">
+		<div class="layui-col-md12">
+			<div class="layui-elem-quote">
+		        <div style="color:red">请注意导入的Excel 数据字段和Excel 模板一致，否则可能无法导入！</div>
+		    </div>
+		</div>
+	</div>
+	<div class="layui-row">
+		<div class="layui-col-md12">
+			<form id="editForm" method="post" method="post" enctype="multipart/form-data" class="layui-form layui-form-pane" lay-filter="form">
+				<div id="form_data" style="overflow-y: auto;">
+					<div class="layui-row">
+						<div class="layui-col-md12">
+			      			<div class="layui-form-item">
+								<label class="layui-form-label" style="width:150px;text-align: right;">Excel数据文件</label>
+								<div class="layui-inline">
+									<input type="hidden" name="fileData" id="fileData" value="">
+									<input type="text" name="fileName" id="fileName" autocomplete="off" class="layui-input" style="width:300px" readonly>
+								</div>
+								<div class="layui-inline">
+									<button type="button" class="layui-btn" id="importFile"><i class="layui-icon">&#xe67c;</i>选择文件</button>
+								</div>
+							</div>
+			    		</div>
+			  		</div>
+				</div>	
+			</form>
+		</div>
+	</div>
+	<table class="layui-hide" id="TableData" lay-filter="tableFilter"></table>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<script type="text/html" id="tableRowNumTpl">
+    {{ d.LAY_TABLE_INDEX+1}}
+</script>
+<script type="text/javascript">
+	layui.use(['table','form','upload'],function () {
+		var table=layui.table;
+    	var form = layui.form;
+    	form.render();
+    	
+        var upload = layui.upload;
+        upload.render({
+            elem: '#importFile',
+            url: '${ctx}/dealwithExcel',
+            auto: false,
+            accept: 'file',
+            exts:'xls|xlsx',
+            field: 'importFile',
+            choose: function(obj){
+            	layer.load(3, {shade: [0.3, '#000000']});
+            	obj.preview(function(index, file, result){
+           	   		$("#fileName").val(file.name);
+           	   		
+           	   		// 执行解析
+           	   		obj.upload(index, file);
+           	    });
+            },
+            done: function(res, index, upload){
+            	if(res.success){
+            		var obj = res.obj;
+            		$("#fileData").val(JSON.stringify(obj.content));
+            		
+            		// 动态生成列
+            		var str = [{width:70,fixed:true,title:'序号',align:'center',templet:'#tableRowNumTpl'},]; 
+            		var titleJson = obj.title;
+            		for (var key in titleJson){
+            			str.push({field:key,title:titleJson[key],width:150,align:'center'},)
+					}
+            		
+            		// 表格数据渲染
+            		table.render({
+                    	id: 'id',
+                        elem: '#TableData',
+                        height:'full-140',
+                        loading:true,
+                        cols: [str],
+                        data: obj.content,
+                        done:function(){
+                 	       	layer.closeAll("loading");
+                        },
+                        page: true
+                    });
+            	}else{
+            		layer.msg("解析Excel失败：" + res.msg, {icon: 5});
+            	}
+            }
+        });
+	});
+	
+	
+</script>
+</body>
+</html>

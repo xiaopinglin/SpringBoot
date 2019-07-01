@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysRolesMapper">
+	<resultMap id="ResultMap" type="com.lxp.model.sys.SysRoles">
+	    <id column="roleId" jdbcType="VARCHAR" property="roleId" />
+	    <result column="roleCode" jdbcType="VARCHAR" property="roleCode" />
+	    <result column="roleName" jdbcType="VARCHAR" property="roleName" />
+	    <result column="roleStatus" jdbcType="VARCHAR" property="roleStatus" />
+	    <result column="roleRemark" jdbcType="VARCHAR" property="roleRemark" />
+	    <result column="createTime" jdbcType="DATE" property="createTime" />
+	    <result column="creator" jdbcType="VARCHAR" property="creator" />
+	    <result column="updateTime" jdbcType="DATE" property="updateTime" />
+	    <result column="updator" jdbcType="VARCHAR" property="updator" />
+	    
+	    <result column="id" jdbcType="VARCHAR" property="id" />
+	    <result column="resId" jdbcType="VARCHAR" property="resId" />
+	</resultMap>
+
+	<select id="querySysRolesByLikes" parameterType="com.lxp.model.sys.SysRoles" resultMap="ResultMap">
+		select * from sys_roles w
+		<where>
+			<if test="roleId!=null and roleId!='' ">
+				AND w.roleId = #{roleId}
+			</if>
+			<if test="roleCode!=null and roleCode!='' ">
+				AND w.roleCode like CONCAT('%',#{roleCode},'%')
+			</if>
+			<if test="roleName!=null and roleName!='' ">
+				AND w.roleName like  CONCAT('%',#{roleName},'%')
+			</if>
+			<if test="roleStatus!=null and roleStatus!='' ">
+				AND w.roleStatus = #{roleStatus}
+			</if>
+		</where>
+		order by roleId
+	</select>
+	
+	<select id="querySysRolesByEquals" parameterType="com.lxp.model.sys.SysRoles" resultMap="ResultMap">
+		select * from sys_roles w
+		<where>
+			<if test="roleId!=null and roleId!='' ">
+				AND w.roleId != #{roleId}
+			</if>
+			<if test="roleCode!=null and roleCode!='' ">
+				AND w.roleCode = #{roleCode}
+			</if>
+			<if test="roleName!=null and roleName!='' ">
+				AND w.roleName = #{roleName}
+			</if>
+			<if test="roleStatus!=null and roleStatus!='' ">
+				AND w.roleStatus = #{roleStatus}
+			</if>
+		</where>
+		order by roleId
+	</select>
+	
+	<select id="getMaxSysRolesCode" resultMap="ResultMap">
+		select max(roleCode) as roleCode from sys_roles 
+	</select>
+	
+	<select id="getOwnSysResoucesByRoleId" parameterType="java.lang.String" resultMap="ResultMap">
+		select roleId,resId from sys_roles_ref where roleId = #{roleId}
+	</select>
+	
+	<insert id="insertSysRolesData" parameterType="com.lxp.model.sys.SysRoles" >
+		insert into sys_roles(
+			roleId,
+			roleCode,
+			roleName,
+			roleStatus,
+			roleRemark,
+			createTime,
+			creator
+		  )values(
+		  	#{roleId,jdbcType=VARCHAR},
+			#{roleCode,jdbcType=VARCHAR},
+			#{roleName,jdbcType=VARCHAR},
+			#{roleStatus,jdbcType=VARCHAR},
+			#{roleRemark,jdbcType=VARCHAR},
+			#{createTime,jdbcType=VARCHAR},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<insert id="saveRoleOwnResoucces" parameterType="java.util.List">
+		insert into sys_roles_ref (id,roleId,resId) values
+        <foreach collection="list" item="item" index="index" separator=",">
+	        (#{item.id},#{item.roleId},#{item.resId})
+        </foreach>
+	</insert>
+	
+	<update id="updateSysRolesData" parameterType="com.lxp.model.sys.SysRoles">
+		update sys_roles set
+			roleName = #{roleName,jdbcType=VARCHAR},
+			roleStatus = #{roleStatus,jdbcType=INTEGER},
+			roleRemark = #{roleRemark,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=VARCHAR},
+			updator = #{updator,jdbcType=VARCHAR}
+		where roleId = #{roleId}
+	</update>
+	
+	<delete id="deleteSysRolesData" parameterType="java.lang.String">
+		delete from sys_roles where roleId = #{roleId}
+	</delete>
+	
+	<delete id="deleteRoleOwnResoucces" parameterType="java.lang.String">
+		delete from sys_roles_ref where roleId = #{roleId}
+	</delete>
+	
+</mapper>

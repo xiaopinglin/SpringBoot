@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+  	<link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+	<form id="editForm" method="post" class="layui-form" lay-filter="form">
+		<div id="form_data" style="overflow-y: auto;">
+			<div class="layui-row">
+	  			<div class="layui-col-md6">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">资源编号</label>
+						<div class="layui-input-block">
+							<input type="hidden" name="resId" value="">
+							<input type="text" name="resCode" class="layui-input" lay-verify="required" value="" readonly>
+							<span class="layui-input-required">*</span>	
+						</div>
+					</div>
+	    		</div>
+	  			<div class="layui-col-md6">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">资源名称</label>
+						<div class="layui-input-block">
+							<input type="text" name="resName" class="layui-input" lay-verify="required" value="" >
+							<span class="layui-input-required">*</span>	
+						</div>
+					</div>
+	    		</div>
+	  		</div>
+			<div class="layui-row">
+				<div class="layui-col-md6">
+	      			<div class="layui-form-item">
+						<label class="layui-form-label">上级资源</label>
+						<div class="layui-input-block">
+							<input type="hidden" name="resPid" value="">
+							<input type="text" name="resPname" class="layui-input" lay-verify="required" value="" readonly>
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	    		</div>
+	    		<div class="layui-col-md6">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">所属系统</label>
+						<div class="layui-input-block">
+							<select name="sysId" lay-verify="required">
+								<option value=""></option>
+								<#if systems??> 
+									<#list systems as sys>
+										<#if (sys.sysId == sysRes.sysId)> 
+											<option value="${sys.sysId!}" >${sys.sysName!}</option>
+										<#else>
+											<option value="${sys.sysId!}" disabled>${sys.sysName!}</option>
+										</#if>
+									</#list> 
+								</#if>
+							</select>
+						</div>
+					</div>
+	    		</div>
+	  		</div>
+	  		<div class="layui-row">
+	  			<div class="layui-col-md6">
+	  				<div class="layui-form-item">
+						<label class="layui-form-label">资源类型</label>
+						<div class="layui-input-block">
+							<select name="resType" lay-verify="required" lay-filter="resTypeBtn">
+								<option value=""></option>
+								<option value="1" ${selBtn?string('disabled','')}>菜单</option>
+								<option value="2" ${selBtn?string('','disabled')}>按钮</option>
+							</select>
+						</div>
+					</div>
+	  			</div>
+	  			<div class="layui-col-md6">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">是否启用</label>
+						<div class="layui-input-block">
+							<input type="radio" name="resStatus" value="1" title="启用" checked>
+			                <input type="radio" name="resStatus" value="0" title="禁用">
+						</div>
+					</div>
+	    		</div>
+	  		</div>
+	  		<div class="layui-row" id="div_icon">
+	  			<div class="layui-col-md6">
+	  				<div class="layui-form-item">
+						<label class="layui-form-label">资源图标</label>
+						<div class="layui-input-block">
+							<input type="text" id="resIcon" name="resIcon" class="layui-input" lay-verify="required" value="" placeholder="请选择资源图标" readonly >
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	  			</div>
+	  			<div class="layui-col-md6">
+	    			<div class="layui-form-item">
+						<label class="layui-form-label">是否末节点</label>
+						<div class="layui-input-block">
+							<select id="resIfChild" name="resIfChild" lay-verify="required" lay-filter="ifChildbtn">
+								<option value=""></option>
+								<option value="1">是</option>
+								<option value="0">否</option>
+							</select>
+						</div>
+					</div>
+	    		</div>
+	  		</div>
+	  		<div class="layui-row" id="div_url">
+	  			<div class="layui-col-md12">
+	  				<div class="layui-form-item">
+						<label class="layui-form-label">访问地址</label>
+						<div class="layui-input-block">
+							<input type="text" id="resUrl" name="resUrl" class="layui-input" lay-verify="required" value="">
+							<span class="layui-input-required">*</span>
+						</div>
+					</div>
+	  			</div>
+	  		</div>
+	  		<div class="layui-row">
+	  			<div class="layui-col-md12">
+	  				<div class="layui-form-item layui-form-text">
+						<label class="layui-form-label">资源描述</label>
+						<div class="layui-input-block">
+							<textarea class="layui-textarea"  name="resRemark" placeholder="请输入内容" ></textarea>
+						</div>
+					</div>
+	  			</div>
+	  		</div>
+		</div>	
+		<div id="from_btn" class="layui-row layui-form-btn">
+			<div class="layui-col-md12">
+				<a id="saveBtn" class="layui-btn" lay-submit lay-filter="saveBtn">提交</a>
+				<a id="closeBtn" class="layui-btn layui-btn-danger">关闭</a>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	var _form;
+	layui.use('form', function(){
+	    var form = layui.form;
+	    _form = layui.form;
+	  	//表单初始赋值
+        form.val('form', {
+            "resId": "${sysRes.resId!}",
+            "resCode": "${sysRes.resCode!}",
+            "resName": "${sysRes.resName!}",
+            "resPid": "${sysRes.resPid!}",
+            "resPname": "${sysRes.resPname!}",
+            "sysId": "${sysRes.sysId!}",
+            "resType": "${sysRes.resType!}",
+            "resStatus": "${sysRes.resStatus!}",
+            "resIcon": "${sysRes.resIcon!}",
+            "resIfChild": "${sysRes.resIfChild!}",
+            "resUrl": "${sysRes.resUrl!}",
+            "resRemark": "${sysRes.resRemark!}"
+        });
+        form.on('select(resTypeBtn)',function (data) {
+        	var resType =  data.value;
+        	if(resType == "2"){
+        		$("#resIcon").attr("lay-verify","");
+        		$("#resIfChild").attr("lay-verify","");
+        		$("#div_icon").hide();
+        		
+        		$("#resIcon").val("");
+        		$("#resIfChild").val("");
+        	}else{
+        		$("#resIcon").attr("lay-verify","required");
+        		$("#resIfChild").attr("lay-verify","required");
+        		$("#div_icon").show();
+        		
+        		// 防止先选未节点
+        		$("#div_url").show();
+        		$("#resUrl").attr("lay-verify","required");
+        	}
+        	form.render();
+        });
+        form.on('select(ifChildbtn)',function (data) {
+        	var ifchild = data.value; 
+        	if(ifchild=='0'){
+        		$("#div_url").hide();
+        		$("#resUrl").val("");
+        		$("#resUrl").attr("lay-verify","");
+        	}else{
+        		$("#div_url").show();
+        		$("#resUrl").attr("lay-verify","required");
+        	}
+        });
+        form.on('submit(saveBtn)',function (data) {
+        	var index = layer.load(3, {shade: [0.3, '#000000']});
+        	$.ajax({
+        		url : '/sys/resources/save',
+    			data:{"data":JSON.stringify(data.field),"cmd":"${cmd!}"},
+    			type:'post',
+    			async:false,
+    			success:function (result) {
+    				layer.close(index);
+    				if(result.success){
+    					layer.msg("提交成功", {icon: 6});
+    					parent.layer.close(parent.layer.getFrameIndex(window.name));
+    					// 刷新父页面树
+    					parent.refreshZtree(data.field,"${cmd!}");
+    			 	}else{
+    		        	layer.msg("提交失败："+ result.msg, {icon: 5});
+    			 	}
+    			},
+    			error: function (XMLHttpRequest, textStatus, errorThrown) {
+    				layer.close(index);
+    			}
+    		});
+        });
+	});
+	
+	$(function(){
+		$(window).resize();
+		
+		var cmd = "${cmd!}";
+		if(cmd == "U"){
+			var ifchild = "${sysRes.resIfChild!}"; 
+	    	if(ifchild=="0"){
+	    		$("#div_url").hide();
+	    		$("#resUrl").val("");
+	    		$("#resUrl").attr("lay-verify","");
+	    	}else{
+	    		$("#div_url").show();
+	    		$("#resUrl").attr("lay-verify","required");
+	    	}
+	    	
+	    	var resType = "${sysRes.resType!}";
+	    	if(resType=="2"){
+	    		$("#resIcon").val("");
+        		$("#resIfChild").val("");
+	    		$("#resIcon").attr("lay-verify","");
+        		$("#resIfChild").attr("lay-verify","");
+        		$("#div_icon").hide();
+	    	}
+		}
+		
+		// 绑定事件监听
+		$("#closeBtn").click(function(){
+	        parent.layer.close(parent.layer.getFrameIndex(window.name));
+		});
+		
+		$("#resIcon").click(function(){
+			layer.open({
+	            type: 2,
+	            title:['<b>图标选择</b>','font-size:15px;text-align:left;'],	
+	            content: ['/gotoIcon', 'yes'],
+	            area: ['95%', '90%'],
+	            btnAlign: 'c',
+	            anim: 2,
+	            btn: ['确认', '关闭'],
+	            yes: function (index, layero) {
+	            	var iframeWin = window[layero.find('iframe')[0]['name']];
+	            	var vl = iframeWin.setValse();
+	            	if(vl == ""){
+	            		layer.msg("请选择图标", {icon: 5});
+	            	}else{
+	            		$("#resIcon").val(vl);
+	            		layer.close(index);
+	            	}
+	            }, btn2: function (index, layero) {
+	                layer.close(index);
+	            }
+	        });
+		});
+	});
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#form_data').height($(window).height() - $('#from_btn').height()-45);
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysDeptMapper">
+	<resultMap id="ResultMap" type="com.lxp.model.sys.SysDept">
+	    <id column="deptId" jdbcType="VARCHAR" property="deptId" />
+	    <result column="deptCode" jdbcType="VARCHAR" property="deptCode" />
+	    <result column="deptName" jdbcType="VARCHAR" property="deptName" />
+	    <result column="deptPid" jdbcType="VARCHAR" property="deptPid" />
+	    <result column="deptStatus" jdbcType="VARCHAR" property="deptStatus" />
+	    <result column="orgId" jdbcType="VARCHAR" property="orgId" />
+	    <result column="deptSid" jdbcType="INTEGER" property="deptSid" />
+	    <result column="deptRemark" jdbcType="VARCHAR" property="deptRemark" />
+	    <result column="createTime" jdbcType="DATE" property="createTime" />
+	    <result column="creator" jdbcType="VARCHAR" property="creator" />
+	    <result column="updateTime" jdbcType="DATE" property="updateTime" />
+	    <result column="updator" jdbcType="VARCHAR" property="updator" />
+	</resultMap>
+
+	<select id="querySysDeptByLikes" parameterType="com.lxp.model.sys.SysDept" resultMap="ResultMap">
+		select * from sys_dept w
+		<where>
+			<if test="deptId!=null and deptId!='' ">
+				AND w.deptId = #{deptId}
+			</if>
+			<if test="deptCode!=null and deptCode!='' ">
+				AND w.deptCode like CONCAT('%',#{deptCode},'%')
+			</if>
+			<if test="deptName!=null and deptName!='' ">
+				AND w.deptName like  CONCAT('%',#{deptName},'%')
+			</if>
+			<if test="deptPid!=null and deptPid!='' ">
+				AND w.deptPid = #{deptPid}
+			</if>
+			<if test="deptStatus!=null and deptStatus!='' ">
+				AND w.deptStatus = #{deptStatus}
+			</if>
+			<if test="orgId!=null and orgId!='' ">
+				AND w.orgId = #{orgId}
+			</if>
+		</where>
+		order by deptSid,deptId
+	</select>
+
+	<select id="querySysDeptByEquals" parameterType="com.lxp.model.sys.SysDept" resultMap="ResultMap">
+		select * from sys_dept w
+		<where>
+			<if test="deptId!=null and deptId!='' ">
+				AND w.deptId != #{deptId}
+			</if>
+			<if test="deptCode!=null and deptCode!='' ">
+				AND w.deptCode = #{deptCode}
+			</if>
+			<if test="deptName!=null and deptName!='' ">
+				AND w.deptName =  #{deptName}
+			</if>
+			<if test="deptPid!=null and deptPid!='' ">
+				AND w.deptPid = #{deptPid}
+			</if>
+			<if test="deptStatus!=null and deptStatus!='' ">
+				AND w.deptStatus = #{deptStatus}
+			</if>
+			<if test="orgId!=null and orgId!='' ">
+				AND w.orgId = #{orgId}
+			</if>
+		</where>
+		order by deptId
+	</select>
+	
+	<select id="getMaxSysDeptCode" resultMap="ResultMap">
+		select max(deptCode) as deptCode from sys_dept 
+	</select>
+	
+	<select id="getAllDeptPidSysDept" resultMap="ResultMap">
+		SELECT DISTINCT deptPid FROM sys_dept ORDER BY deptId
+	</select>
+	
+	<select id="getSysDeptBySidAndPid" parameterType="java.lang.String" resultMap="ResultMap">
+		SELECT * FROM sys_dept WHERE deptSid > #{deptSid} AND deptPid = #{deptPid} ORDER BY deptSid
+	</select>
+	
+	<select id="getSysDeptBySidAndPidDesc" parameterType="java.lang.String" resultMap="ResultMap">
+		SELECT * FROM sys_dept WHERE deptSid <![CDATA[ < ]]> #{deptSid} AND deptPid = #{deptPid} ORDER BY deptSid DESC
+	</select>
+	
+	<select id="getSysDeptSidByDeptPid" parameterType="java.lang.String" resultMap="ResultMap">
+		select max(deptSid) as deptSid from sys_dept where deptPid = #{deptPid}
+	</select>
+	
+	<insert id="insertSysDeptData" parameterType="com.lxp.model.sys.SysDept" >
+		insert into sys_dept(
+			deptId,
+			deptCode,
+			deptName,
+			deptPid,
+			deptStatus,
+			deptSid,
+			orgId,
+			deptRemark,
+			createTime,
+			creator
+		  )values(
+		  	#{deptId,jdbcType=VARCHAR},
+			#{deptCode,jdbcType=VARCHAR},
+			#{deptName,jdbcType=VARCHAR},
+			#{deptPid,jdbcType=VARCHAR},
+			#{deptStatus,jdbcType=VARCHAR},
+			#{deptSid,jdbcType=INTEGER},
+			#{orgId,jdbcType=VARCHAR},
+			#{deptRemark,jdbcType=VARCHAR},
+			#{createTime,jdbcType=DATE},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+
+	<update id="updateSysDeptData" parameterType="com.lxp.model.sys.SysDept">
+		update sys_dept set
+			deptName = #{deptName,jdbcType=VARCHAR},
+			deptStatus =#{deptStatus,jdbcType=INTEGER},
+			deptRemark = #{deptRemark,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=DATE},
+			updator = #{updator,jdbcType=VARCHAR}
+		where deptId = #{deptId}
+	</update>
+
+	<update id="updateSysDeptSid" parameterType="java.lang.String" >
+		update sys_dept set deptSid = #{deptSid} where deptId = #{deptId}
+	</update>
+
+	<delete id="deleteSysDeptData" parameterType="java.lang.String">
+		delete from sys_dept where deptId = #{deptId}
+	</delete>
+
+	<delete id="deleteSysDeptDataByOrgId" parameterType="java.lang.String">
+		delete from sys_dept where orgId = #{orgId}
+	</delete>
+	
+</mapper>

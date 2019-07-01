@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>工作流引擎</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="${ctx}/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="${ctx}/css/common.css"  media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-elem-quote">
+		<div class="layui-breadcrumb">
+			<a><i class="layui-icon layui-icon-home"></i>首页</a>
+			<a><i class="layui-icon layui-icon-set"></i>辅助模块</a>
+			<a><i class="layui-icon layui-icon-location"></i>工作流引擎</a>
+	    </div>
+    </div>
+    <fieldset class="layui-elem-field">
+        <legend>查询条件</legend>
+        <form id="form" class="layui-form" action="">
+	        <div class="layui-row">
+	        	<!--查询项-->
+		        <div class="layui-col-md3">
+		            <div class="layui-form-item">
+			            <label class="layui-form-label">工作流名称</label>
+			            <div class="layui-input-block">
+			                <input type="text" name="title" id="title" class="layui-input">
+			            </div>
+			        </div>
+		        </div>
+		    </div>
+		    <!-- 操作按钮 -->
+		    <div class="layui-row">
+    			<div class="layui-col-md12">
+    				<div class="layui-btn-pull-right">
+    					<a class="layui-btn" lay-submit lay-filter="queryBtn">查询</a>
+		                <a class="layui-btn layui-btn-warm" lay-submit lay-filter="addBtn">新增</a>
+    				</div>
+		        </div>
+    		</div>
+	    </form>
+    </fieldset>
+    <table class="layui-hide" id="TableData" lay-filter="tableFilter"></table>
+</div>
+<!-- layui -->
+<script type="text/javascript" src="${ctx}/layui/layui.js"></script>
+<!-- jq -->
+<script type="text/javascript" src="${ctx}/js/jquery-3.3.1.min.js"></script>
+<!-- common.js -->
+<script type="text/javascript" src="${ctx}/js/common.js"></script>
+<script type="text/html" id="tableRowNumTpl">
+    {{ d.LAY_TABLE_INDEX+1}}
+</script>
+<script>
+    layui.use(['element','form','table'], function(){
+    	var element = layui.element;
+    	var form = layui.form;
+        var table = layui.table;
+        table.render({
+        	id: 'id',
+            elem: '#TableData',
+            url:'${ctx}/ass/exam/list',
+            height:'full-228',
+            loading:true,
+            method:'post',
+            done:function(){
+     	       	layer.closeAll("loading");
+            },
+            cols: [[
+				{width:70,fixed:true,title:'序号',align:'center',templet:'#tableRowNumTpl'},
+				{field:'title',title: '题目',minWidth:400},
+				{field:'xa',title: '选项A',width:150},
+				{field:'xb',title: '选项B',width:150},
+				{field:'xc',title: '选项C',width:150},
+				{field:'xd',title: '选项D',width:150},
+				{field:'xe',title: '选项E',width:150},
+				{field:'da',title: '答案',width:80,align:'center'}
+            ]],
+            page: true
+        });
+        form.on('submit(queryBtn)',function (data) {
+        	layer.load(3, {shade: [0.3, '#000000']});
+        	table.reload('id',{
+	            where:data.field || {}
+	        });
+        });
+        form.on('submit(addBtn)',function (data) {
+        	layer.open({
+	            type: 2,
+	            title:['<b>编辑工作流</b>','font-size:15px;text-align:left;'],	
+	            content: ['${ctx}/gotoImport', 'no'],
+	            area: ['600px', '300px'],
+	            btnAlign: 'c',
+	            anim: 2,
+	            btn: ['保存', '取消'],
+	            yes: function (index, layero) {
+	            	var iframeWin = window[layero.find('iframe')[0]['name']];
+	            	iframeWin.saveRoleExport();
+	            }, btn2: function (index, layero) {
+	                layer.close(index);
+	            }	
+	        });
+	    	return false;
+        });
+    });
+    
+</script>
+</body>
+</html>

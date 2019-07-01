@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxp.mapper.sys.SysUsersMapper">
+	<resultMap id="resultMap" type="com.lxp.model.sys.SysUsers">
+		<id column="userId" property="userId" jdbcType="VARCHAR" />
+		<result column="userCode" property="userCode" jdbcType="VARCHAR"/>
+		<result column="userName" property="userName" jdbcType="VARCHAR"/>
+		<result column="userAccount" property="userAccount" jdbcType="VARCHAR"/>
+		<result column="userPwd" property="userPwd" jdbcType="VARCHAR"/>
+		<result column="userPwdBak" property="userPwdBak" jdbcType="VARCHAR"/>
+		<result column="userMobile" property="userMobile" jdbcType="VARCHAR"/>
+		<result column="userEmail" property="userEmail" jdbcType="VARCHAR"/>
+		<result column="userStatus" property="userStatus" jdbcType="VARCHAR"/>
+		<result column="orgId" property="orgId" jdbcType="VARCHAR"/>
+		<result column="deptId" property="deptId" jdbcType="VARCHAR"/>
+		<result column="userRemark" property="userRemark" jdbcType="VARCHAR"/>
+		<result column="lastLoginIp" property="lastLoginIp" jdbcType="VARCHAR"/>
+		<result column="lastLoginTime" property="lastLoginTime" jdbcType="DATE"/>
+		<result column="ifDelete" property="ifDelete" jdbcType="VARCHAR"/>
+		<result column="ifAdmin" property="ifAdmin" jdbcType="VARCHAR"/>
+		<result column="errorNum" property="errorNum" jdbcType="INTEGER"/>
+		<result column="createTime" property="createTime" jdbcType="DATE" />
+	    <result column="creator"  property="creator" jdbcType="VARCHAR"/>
+	    <result column="updateTime"  property="updateTime" jdbcType="DATE"/>
+	    <result column="updator" property="updator" jdbcType="VARCHAR" />
+	    
+	    <result column="orgName" property="orgName" jdbcType="VARCHAR"/>
+	    <result column="deptName" property="deptName" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="querySysUsersByLikes" parameterType="com.lxp.model.sys.SysUsers" resultMap="resultMap">
+		select w.*,b.orgname,c.deptname from sys_users w left join sys_organ b on w.orgid= b.orgid left join sys_dept c on w.deptid = c.deptid
+		<where>
+			<if test="userId!=null and userId!=''">
+				AND w.userId = #{userId}
+			</if>
+			<if test="userCode!=null and userCode!=''">
+				AND w.userCode like CONCAT('%',#{userCode},'%')
+			</if>
+			<if test="userName!=null and userName!=''">
+				AND w.userName like CONCAT('%',#{userName},'%')
+			</if>
+			<if test="userAccount!=null and userAccount!=''">
+				AND w.userAccount like CONCAT('%',#{userAccount},'%')
+			</if>
+			<if test="userStatus!=null and userStatus!=''">
+				AND w.userStatus = #{userStatus}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				AND w.orgId = #{orgId}
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				AND w.deptId = #{deptId}
+			</if>
+		</where>
+		order by userId
+	</select>
+	
+	<select id="querySysUsersByEquals" parameterType="com.lxp.model.sys.SysUsers" resultMap="resultMap">
+		select w.*,b.orgname,c.deptname from sys_users w left join sys_organ b on w.orgid= b.orgid left join sys_dept c on w.deptid = c.deptid
+		<where>
+			<if test="userId!=null and userId!=''">
+				AND w.userId != #{userId}
+			</if>
+			<if test="userCode!=null and userCode!=''">
+				AND w.userCode = #{userCode}
+			</if>
+			<if test="userName!=null and userName!=''">
+				AND w.userName = #{userName}
+			</if>
+			<if test="userAccount!=null and userAccount!=''">
+				AND w.userAccount = #{userAccount}
+			</if>
+			<if test="userStatus!=null and userStatus!=''">
+				AND w.userStatus = #{userStatus}
+			</if>
+			<if test="orgId!=null and orgId!=''">
+				AND w.orgId = #{orgId}
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				AND w.deptId = #{deptId}
+			</if>
+		</where>
+		order by userId
+	</select>
+	
+	<select id="getMaxSysUsersCode" resultMap="resultMap">
+		select max(userCode) as userCode from sys_users 
+	</select>
+	
+	<select id="getOwnSysResoucesByUserId" parameterType="java.lang.String" resultMap="resultMap">
+		select userId,resId from sys_users_ref where userId = #{userId}
+	</select>
+	
+	<select id="getOwnSysRolesByUserId" parameterType="java.lang.String" resultMap="resultMap">
+		select userId,roleId from sys_users_roles where userId = #{userId}
+	</select>
+
+	<insert id="insertSysUsersData" parameterType="com.lxp.model.sys.SysUsers">
+		insert into sys_users(
+			userId,
+			userCode,
+			userName,
+			userAccount,
+			userPwd,
+			userPwdBak,
+			userMobile,
+			userEmail,
+			userStatus,
+			orgId,
+			deptId,
+			userRemark,
+			lastLoginIp,
+			lastLoginTime,
+			ifDelete,
+			ifAdmin,
+			errorNum,
+			createTime,
+			creator
+		  )values(
+		  	#{userId,jdbcType=VARCHAR},
+			#{userCode,jdbcType=VARCHAR},
+			#{userName,jdbcType=VARCHAR},
+			#{userAccount,jdbcType=VARCHAR},
+			#{userPwd,jdbcType=VARCHAR},
+			#{userPwdBak,jdbcType=VARCHAR},
+			#{userMobile,jdbcType=VARCHAR},
+			#{userEmail,jdbcType=VARCHAR},
+			#{userStatus,jdbcType=VARCHAR},
+			#{orgId,jdbcType=VARCHAR},
+			#{deptId,jdbcType=VARCHAR},
+			#{userRemark,jdbcType=VARCHAR},
+			#{lastLoginIp,jdbcType=VARCHAR},
+			#{lastLoginTime,jdbcType=VARCHAR},
+			#{ifDelete,jdbcType=VARCHAR},
+			#{ifAdmin,jdbcType=VARCHAR},
+			#{errorNum,jdbcType=INTEGER},
+			#{createTime,jdbcType=DATE},
+			#{creator,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<insert id="saveUsersOwnResoucces" parameterType="com.lxp.model.sys.SysUsers">
+		insert into sys_users_ref (id,userId,resId) values
+	        <foreach collection="list" item="item" index="index" separator=",">
+		        (#{item.id},#{item.userId},#{item.resId})
+	        </foreach>
+	</insert>
+	
+	<insert id="saveUsersOwnRoles" parameterType="com.lxp.model.sys.SysUsers">
+		insert into sys_users_roles (id,userId,roleId) values
+	        <foreach collection="list" item="item" index="index" separator=",">
+		        (#{item.id},#{item.userId},#{item.roleId})
+	        </foreach>
+	</insert>
+	
+	<update id="updateSysUsersData" parameterType="com.lxp.model.sys.SysUsers">
+		update sys_users set 
+			userName = #{userName,jdbcType=VARCHAR},
+			userAccount = #{userAccount,jdbcType=VARCHAR},
+			userPwd = #{userPwd,jdbcType=VARCHAR},
+			userPwdBak = #{userPwdBak,jdbcType=VARCHAR},
+			userMobile = #{userMobile,jdbcType=VARCHAR},
+			userEmail = #{userEmail,jdbcType=VARCHAR},
+			userStatus = #{userStatus,jdbcType=VARCHAR},
+			userRemark = #{userRemark,jdbcType=VARCHAR},
+			orgId = #{orgId,jdbcType=VARCHAR},
+			deptId = #{deptId,jdbcType=VARCHAR},
+			updateTime = #{updateTime,jdbcType=DATE},
+			updator = #{updator,jdbcType=VARCHAR}
+		  WHERE userId = #{userId}
+	</update>
+	
+	<update id="updateLastLoginInfo" parameterType="com.lxp.model.sys.SysUsers">
+		update sys_users set lastLoginIp = #{lastLoginIp},lastLoginTime = #{lastLoginTime},errorNum = 0 WHERE userId = #{userId}
+	</update>
+	
+	<delete id="deleteSysUsersData" parameterType="java.lang.String">
+		delete from sys_users where userId = #{userId}
+	</delete>
+	
+	<delete id="deleteUsersOwnResoucces" parameterType="java.lang.String">
+		delete from sys_users_ref where userId = #{userId}
+	</delete>
+	
+	<delete id="deleteUsersOwnRoles" parameterType="java.lang.String">
+		delete from sys_users_roles where userId = #{userId}
+	</delete>
+	
+</mapper>
