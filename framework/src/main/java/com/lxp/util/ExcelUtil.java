@@ -1,18 +1,9 @@
 package com.lxp.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.lxp.common.Constant;
+import com.lxp.common.GenID;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -21,13 +12,14 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lxp.common.Constant;
-import com.lxp.common.GenID;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ExcelUtil工具类
@@ -88,7 +80,6 @@ public class ExcelUtil {
 						for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
 							HSSFCell cell = row.getCell(k);
 							String cellCode = String.valueOf(cell.getColumnIndex());
-
 							String cellName = "";
 							if (!StringUtil.StringIfNullOrEmpty(String.valueOf(row.getCell(k)))) {
 								cellName = row.getCell(k).toString();
@@ -121,34 +112,35 @@ public class ExcelUtil {
 					if (j == 0) {
 						for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
 							XSSFCell cell = row.getCell(k);
-							String cellCode = cell.getReference();
-							cellCode = cellCode.substring(0, 1);
-
-							String cellName = "";
-							if (!StringUtil.StringIfNullOrEmpty(String.valueOf(row.getCell(k)))) {
-								cellName = row.getCell(k).toString();
-							} else {
-								cellName = "";
+							if(!StringUtils.isEmpty(cell)){
+								String cellCode = cell.getReference();
+								cellCode = cellCode.substring(0, 1);
+								String cellName = "";
+								if (!StringUtil.StringIfNullOrEmpty(String.valueOf(row.getCell(k)))) {
+									cellName = row.getCell(k).toString();
+								} else {
+									cellName = "";
+								}
+								titleObj.put(cellCode, cellName);
 							}
-
-							titleObj.put(cellCode, cellName);
 						}
 
 					} else {
 						JSONObject cellObj = new JSONObject();
 						for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
 							XSSFCell cell = row.getCell(k);
-							String cellCode = cell.getReference();
-							cellCode = cellCode.substring(0, 1);
+							if(!StringUtils.isEmpty(cell)){
+								String cellCode = cell.getReference();
+								cellCode = cellCode.substring(0, 1);
 
-							String cellName = "";
-							if (!StringUtil.StringIfNullOrEmpty(String.valueOf(row.getCell(k)))) {
-								cellName = row.getCell(k).toString();
-							} else {
-								cellName = "";
+								String cellName = "";
+								if (!StringUtil.StringIfNullOrEmpty(String.valueOf(row.getCell(k)))) {
+									cellName = row.getCell(k).toString();
+								} else {
+									cellName = "";
+								}
+								cellObj.put(cellCode, cellName);
 							}
-
-							cellObj.put(cellCode, cellName);
 						}
 						contentJson.add(cellObj);
 					}

@@ -1,11 +1,11 @@
 package com.lxp.model.assist;
 
-import java.io.Serializable;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * @author lxp
@@ -21,6 +21,7 @@ public class Exam implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String id;
+	private Integer sn;
 	private String nper;
 	private String type;
 	private String title;
@@ -30,6 +31,6 @@ public class Exam implements Serializable {
 	private String xd;
 	private String xe;
 	private String da;
-	private Integer sn;
+
 
 }
